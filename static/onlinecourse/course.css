@@ -1,7 +1,3 @@
-body {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
 * {
     box-sizing: border-box;
 }
@@ -10,7 +6,7 @@ body {
 body {
     font-family: Arial;
     padding: 10px;
-    background: #ececec;
+    height: 100vh;
 }
 
 /* Header/Blog Title */
@@ -54,6 +50,38 @@ body {
     content: "";
     display: table;
     clear: both;
+}
+
+.input-group {
+    column-gap: 8px;
+}
+
+a.btn,
+a.btn-outline-primary {
+    color: #055297;
+}
+
+a.btn {
+    font-weight: 600;
+}
+
+a.btn:hover {
+    color: #1d833d;
+}
+
+a.btn-outline-primary {
+    font-weight: 400;
+    border: none;
+}
+
+a.btn-outline-primary:hover {
+    background-color: #055297;
+    color: snow;
+}
+
+.form-group {
+    margin-top: 1.25rem;
+    margin-left: 1.25rem;
 }
 
 /* Footer */
@@ -114,42 +142,25 @@ body {
     padding: 20px;
 }
 
-/* Add responsiveness - make the columns appear on top of each other instead of next to each other on small screens */
-@media screen and (max-width: 1000px) {
-    .column-66,
-    .column-33 {
-        width: 100%;
-        text-align: center;
-    }
-}
-
 /* Full-width input fields */
 input[type="text"],
 input[type="password"] {
     width: 100%;
     padding: 15px;
-    margin: 5px 0 22px 0;
     display: inline-block;
     border: none;
-    background: #dadfe1;
+    background-color: #ecf0f1;
+    border-radius: 5px !important;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus {
-    background-color: #ddd;
+    background-color: snow;
     outline: none;
 }
 
 .red {
     color: red;
-}
-
-.dropbtn {
-    background-color: #005493;
-    color: white;
-    padding: 16px;
-    font-size: 16px;
-    border: none;
 }
 
 .dropdown {
@@ -161,7 +172,9 @@ input[type="password"]:focus {
     display: none;
     position: absolute;
     background-color: #f1f1f1;
-    min-width: 160px;
+    text-wrap: nowrap;
+    width: fit-content;
+    font-size: 14px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
@@ -182,5 +195,18 @@ input[type="password"]:focus {
 }
 
 .dropdown:hover .dropbtn {
-    background-color: darkblue;
+    background-color: #055297;
+}
+
+ol.breadcrumb {
+    background: none;
+}
+
+/* Add responsiveness - make the columns appear on top of each other instead of next to each other on small screens */
+@media screen and (max-width: 1000px) {
+    .column-66,
+    .column-33 {
+        width: 100%;
+        text-align: center;
+    }
 }

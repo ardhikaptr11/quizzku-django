@@ -20,7 +20,7 @@ Functions:
 from django.contrib import admin
 
 # Import models
-from .models import Choice, Course, Instructor, Learner, Lesson, Question, Submission
+from .models import Choice, Course, Enrollment, Instructor, Learner, Lesson, Question, Submission
 
 
 # Admin inline classes
@@ -28,11 +28,11 @@ class QuestionInline(admin.StackedInline):
     """
     QuestionInline is a Django admin inline class that allows the Question model to be edited inline within the
     admin interface. This class uses a stacked layout for displaying the inline form fields.
-    
+
     Attributes:
-        
+
         model (Model): The model that this inline class is associated with, which is the Question model.
-        
+
         extra (int): The number of extra empty forms to display in the admin interface for adding new
         instances of the Question model.
     """
@@ -45,11 +45,11 @@ class ChoiceInline(admin.StackedInline):
     """
     ChoiceInline is a Django admin inline class that allows the Choice model to be edited inline within the
     admin interface. This class uses a stacked layout for displaying the inline form fields.
-    
+
     Attributes:
-        
+
         model (Model): The model that this inline class is associated with, which is the Choice model.
-        
+
         extra (int): The number of extra empty forms to display in the admin interface for adding new
         instances of the Choice model.
     """
@@ -62,11 +62,11 @@ class LessonInline(admin.StackedInline):
     """
     LessonInline is a Django admin inline class that allows the Lesson model to be edited inline within the admin
     interface. This class uses a stacked layout for displaying the inline form fields.
-    
+
     Attributes:
-    
+
         model (Model): The model that this inline class is associated with, which is the Lesson model.
-    
+
         extra (int): The number of extra empty forms to display in the admin interface for adding new
         instances of the Lesson model.
     """
@@ -79,7 +79,7 @@ class LessonInline(admin.StackedInline):
 class CourseAdmin(admin.ModelAdmin):
     """
     CourseAdmin is a custom admin class for the Course model in the Django admin interface.
-    
+
     Attributes:
         inlines (list): A list of inline models to be displayed within the Course admin interface.
         list_display (list): A list of fields to be displayed in the list view of the Course admin interface.
@@ -125,3 +125,4 @@ admin.site.register(Instructor)
 admin.site.register(Learner)
 admin.site.register(Choice)
 admin.site.register(Submission)
+admin.site.register(Enrollment)

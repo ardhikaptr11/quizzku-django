@@ -1,0 +1,36 @@
+form {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #34495e;
+}
+
+.login-wrap {
+    width: 350px;
+    position: relative;
+    margin: 0 auto;
+    padding: 15px;
+    background: #ecf0f1;
+    border-radius: 5px;
+    box-shadow: 3px 3px 10px #333;
+}
+
+h2 {
+    font-family: "Helvetica Neue", Arial, Sans-Serif;
+    text-align: center;
+    padding: 20px;
+    margin-bottom: 0;
+    color: #065292;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="password"] {
+    margin-bottom: 20px;
+}
+
+.signup-option {
+    text-align: center;
+    margin: 20px auto;
+}

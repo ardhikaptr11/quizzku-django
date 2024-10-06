@@ -139,7 +139,7 @@ class Lesson(models.Model):
         content (TextField): The content of the lesson.
     """
 
-    title = models.CharField(max_length=200, default="title")
+    title = models.CharField(null=False, max_length=200, default="title")
     order = models.IntegerField(default=0)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
     content = models.TextField()
@@ -183,6 +183,7 @@ class Question(models.Model):
 
     Attributes:
         course (ForeignKey): The course to which the question belongs.
+        lesson (ForeignKey): The lesson to which the question belongs.
         question_text (CharField): The text of the question, limited to 200 characters.
         grade (IntegerField): The grade assigned to the question, default is 50.
 
@@ -209,9 +210,11 @@ class Question(models.Model):
         else:
             return False
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
+    # course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)  # Content of the question
-    grade = models.IntegerField(default=50)
+    grade = models.IntegerField(default=100)
+    expect_multiple_answer = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Question: {self.question_text}"

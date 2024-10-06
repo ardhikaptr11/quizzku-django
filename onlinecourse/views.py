@@ -48,7 +48,7 @@ from django.urls import reverse
 from django.views import generic
 
 # Import models
-from .models import Course, Enrollment, Submission
+from .models import Course, Enrollment, Lesson, Submission
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -93,14 +93,16 @@ def registration_request(request: HttpRequest) -> HttpResponse:
 
         # Create a new user if the user does not exist, otherwise return an error message
         if not user_exist:
-            user = User.objects.create_user(
+            User.objects.create_user(
                 username=username,
                 first_name=first_name,
                 last_name=last_name,
                 password=password,
             )
-            login(request, user)
-            return redirect("onlinecourse:index")
+            # login(request, user)
+            context["message"] = "Success! Please login to continue"
+            return render(request, template_name="onlinecourse/user_login_bootstrap.html", context=context)
+            # return redirect(to="onlinecourse:index")
         else:
             context["message"] = "User already exists."
             return render(request, template_name="onlinecourse/user_registration_bootstrap.html", context=context)
@@ -195,7 +197,7 @@ class CourseDetailView(generic.DetailView):
     template_name = "onlinecourse/course_detail_bootstrap.html"
 
 
-def enroll(request: HttpRequest, course_id: int) -> HttpResponseRedirect:
+def enroll(request: HttpRequest, course_id: int) -> HttpResponse | HttpResponseRedirect:
     course = get_object_or_404(Course, pk=course_id)  # Get the Course object based on the course_id
     user = request.user
 
@@ -207,13 +209,43 @@ def enroll(request: HttpRequest, course_id: int) -> HttpResponseRedirect:
         Enrollment.objects.create(user=user, course=course, mode="honor")
         course.total_enrollment += 1
         course.save()
+        return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
 
     # Redirect to the course details page if the user is authenticated and enrolled
     if user.is_authenticated and is_enrolled:
         return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
 
     # Redirect to the login page if the user is not authenticated
-    return HttpResponseRedirect(reverse(viewname="onlinecourse:login"))
+    message = "Oops! You're not logged in."
+    return render(request, template_name="onlinecourse/user_login_bootstrap.html", context={"message": message})
+
+
+def start_exam(request: HttpRequest, course_id: int) -> HttpResponse:
+    context = {}
+
+    # Retrieve the course based on the course_id
+    course = get_object_or_404(Course, pk=course_id)
+
+    # Retrieve the lesson name from the query parameter
+    lesson_title = request.GET.get("name", "").strip()
+
+    # Check if lesson_title is provided
+    if not lesson_title:
+        return HttpResponse("Lesson name is required.", status=400)
+
+    # Find the lesson based on the lesson title and course
+    lesson = get_object_or_404(Lesson, title=lesson_title, course=course)
+
+    # Ensure that Question model has a ForeignKey to Lesson
+    # Assuming Question has a ForeignKey to Lesson with related_name='questions'
+    questions = lesson.question_set.all()
+
+    # Prepare the context for the template
+    context["course"] = course
+    context["lesson"] = lesson
+    context["questions"] = questions
+
+    return render(request, "onlinecourse/exam_page.html", context=context)
 
 
 # Create a submit view to create an exam submission record for a course enrollment
@@ -229,11 +261,11 @@ def submit(request: HttpRequest, course_id: int) -> HttpResponseRedirect:
     Returns:
         HttpResponseRedirect: A redirect response to the exam result page with the course ID and submission ID.
     """
-
     course = get_object_or_404(Course, pk=course_id)
     user = request.user
     # Get the Enrollment object for the user and course
     enrollment = Enrollment.objects.get(user=user, course=course)
+    # lesson = enrollment.course.lesson_set.filter(pk=lesson_id)
     # Create Submission object for the enrollment
     submission = Submission.objects.create(enrollment=enrollment)
     submission_id = submission.id
@@ -285,23 +317,64 @@ def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -
     context = {}
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
+    lesson = Lesson.objects.filter(course=course).first()
     # Get QuerySet of selected choices for the submission
-    choices = submission.choices.all()
+    choices = submission.choices.filter(question__lesson=lesson)
     total_score = 0
     # Get QuerySet of questions for the course
-    questions = course.question_set.all()
+    questions = lesson.question_set.all()
 
     # Calculate total score by comparing selected choices with correct choices for each question
     for question in questions:
-        correct_choices = question.choice_set.filter(is_correct=True)
-        selected_choices = choices.filter(question=question)
-        # Score will be added if the selected choice matches the correct choice
-        if set(selected_choices) == set(correct_choices):
-            total_score += question.grade
+        correct_choices = question.choice_set.filter(is_correct=True)  # Question's correct choices
+        selected_choices = choices.filter(question=question)  # User selected choices
+        user_correct_choices = selected_choices.filter(is_correct=True)  # User selected correct choices
+
+        if question.expect_multiple_answer:
+            score_if_empty = 50
+            point_per_choice = question.grade / question.choice_set.count()  # Point of each choice
+            diff = abs(len(selected_choices) - len(user_correct_choices))  # Total incorrect choices selected by user
+
+            if len(selected_choices) == len(correct_choices):
+                # Check if all the selected choices are correct
+                # If all the selected choices are correct, the question will have the full grade
+                # Otherwise, the grade will be reduced by the total point of incorrect choices
+                question.grade = (
+                    question.grade
+                    if set(selected_choices) == set(correct_choices)
+                    else question.grade - diff * point_per_choice
+                )
+                total_score += question.grade
+
+            if not selected_choices:  # No choice is selected
+                question.grade = score_if_empty
+                total_score += question.grade
+            elif len(selected_choices) < len(correct_choices):  # Selected choices are less than correct choices
+                question.grade = score_if_empty + (len(user_correct_choices) * point_per_choice)
+                total_score += question.grade
+            elif len(selected_choices) > len(correct_choices):  # Selected choices are more than correct choices
+                question.grade = (
+                    score_if_empty + (len(user_correct_choices) * point_per_choice) - diff * point_per_choice
+                )
+                total_score += question.grade
+        else:
+            if not selected_choices:
+                question.grade = 0
+                total_score += question.grade
+
+            if set(correct_choices) == set(selected_choices):
+                total_score += question.grade
+
+    total_score /= len(questions)
 
     # Add courses, total scores, and choices to the context dictionary for further use within the template
     context["course"] = course
-    context["grade"] = total_score
+    context["lesson"] = lesson
+    context["grade"] = int(total_score) if total_score % 2 == 0 else round(total_score, 3)
     context["choices"] = choices
 
     return render(request, template_name="onlinecourse/exam_result_bootstrap.html", context=context)
+
+
+def calculate_score():
+    pass
