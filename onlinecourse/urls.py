@@ -35,11 +35,11 @@ urlpatterns = [
     path(route="login/", view=views.login_request, name="login"),
     path(route="logout/", view=views.logout_request, name="logout"),
     path(route="enroll/<int:course_id>/", view=views.enroll, name="enroll"),
-    path(route="exam/<int:course_id>/lesson/", view=views.start_exam, name="exam_lesson"),
-    path(route="<int:course_id>/submit/", view=views.submit, name="submit"),
-    # http://localhost:8000/onlinecourse/1/submit
+    path(route="quiz/<int:course_id>/lesson/", view=views.start_exam, name="quiz_page"),
+    path(route="quiz/<int:course_id>/lesson/<int:lesson_id>/submit/", view=views.submit, name="submit"),
+    # path(route="<int:course_id>/submit/", view=views.submit, name="submit"),
     path(
-        route="exam/<int:course_id>/submission/<int:submission_id>/",
+        route="quiz/<int:course_id>/submission/<int:submission_id>/",
         view=views.show_exam_result,
         name="exam_result",
     ),

@@ -213,6 +213,10 @@ def enroll(request: HttpRequest, course_id: int) -> HttpResponse | HttpResponseR
 
     # Redirect to the course details page if the user is authenticated and enrolled
     if user.is_authenticated and is_enrolled:
+        lessons = course.lesson_set.all()
+        for lesson in lessons:
+            lesson.attempt.set(3)
+            lesson.save()
         return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
 
     # Redirect to the login page if the user is not authenticated
@@ -249,7 +253,7 @@ def start_exam(request: HttpRequest, course_id: int) -> HttpResponse:
 
 
 # Create a submit view to create an exam submission record for a course enrollment
-def submit(request: HttpRequest, course_id: int) -> HttpResponseRedirect:
+def submit(request: HttpRequest, course_id: int, lesson_id: int) -> HttpResponseRedirect:
     """
     Handles the submission of an exam for a specific course by a user.
     The function retrieves the course and user information, gets the corresponding enrollment object,
@@ -261,17 +265,20 @@ def submit(request: HttpRequest, course_id: int) -> HttpResponseRedirect:
     Returns:
         HttpResponseRedirect: A redirect response to the exam result page with the course ID and submission ID.
     """
-    course = get_object_or_404(Course, pk=course_id)
     user = request.user
+
+    # course = get_object_or_404(Course, pk=course_id)
+    enrollment = get_object_or_404(Enrollment, user=user, course__id=course_id)
+    lesson = get_object_or_404(Lesson, pk=lesson_id, course=enrollment.course)
     # Get the Enrollment object for the user and course
-    enrollment = Enrollment.objects.get(user=user, course=course)
     # lesson = enrollment.course.lesson_set.filter(pk=lesson_id)
     # Create Submission object for the enrollment
-    submission = Submission.objects.create(enrollment=enrollment)
+    submission = Submission.objects.create(lesson=lesson)
     submission_id = submission.id
     # Associate selected choices with the submission
     choices = extract_answers(request)
     submission.choices.set(choices)
+    submission_id = submission.id
     return HttpResponseRedirect(reverse(viewname="onlinecourse:exam_result", args=(course_id, submission_id)))
 
 
@@ -315,14 +322,14 @@ def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -
     """
 
     context = {}
+
     course = get_object_or_404(Course, pk=course_id)
     submission = get_object_or_404(Submission, pk=submission_id)
-    lesson = Lesson.objects.filter(course=course).first()
-    # Get QuerySet of selected choices for the submission
-    choices = submission.choices.filter(question__lesson=lesson)
-    total_score = 0
-    # Get QuerySet of questions for the course
+    lesson = submission.lesson
     questions = lesson.question_set.all()
+    choices = submission.choices.all()
+
+    total_score = 0
 
     # Calculate total score by comparing selected choices with correct choices for each question
     for question in questions:
@@ -339,12 +346,12 @@ def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -
                 # Check if all the selected choices are correct
                 # If all the selected choices are correct, the question will have the full grade
                 # Otherwise, the grade will be reduced by the total point of incorrect choices
-                question.grade = (
+                question_grade = (
                     question.grade
                     if set(selected_choices) == set(correct_choices)
                     else question.grade - diff * point_per_choice
                 )
-                total_score += question.grade
+                total_score += question_grade
 
             if not selected_choices:  # No choice is selected
                 question.grade = score_if_empty
@@ -359,8 +366,9 @@ def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -
                 total_score += question.grade
         else:
             if not selected_choices:
-                question.grade = 0
-                total_score += question.grade
+                question_grade = 0
+                total_score += question_grade
+                context["question_grade"] = question_grade
 
             if set(correct_choices) == set(selected_choices):
                 total_score += question.grade

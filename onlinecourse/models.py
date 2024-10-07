@@ -141,8 +141,9 @@ class Lesson(models.Model):
 
     title = models.CharField(null=False, max_length=200, default="title")
     order = models.IntegerField(default=0)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
     content = models.TextField()
+    attempt = models.IntegerField()
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
 
 
 # Enrollment model
@@ -210,7 +211,6 @@ class Question(models.Model):
         else:
             return False
 
-    # course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
     lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     question_text = models.CharField(max_length=200)  # Content of the question
     grade = models.IntegerField(default=100)
@@ -238,15 +238,14 @@ class Choice(models.Model):
 
 class Submission(models.Model):
     """
-    Represents a submission made by a student for an online course.
-
+    Represents a submission made by a student for a particular lesson in the online course.
     Attributes:
-        enrollment (ForeignKey): A reference to the Enrollment model, indicating the student
-                                    who made the submission. If the enrollment is deleted, the submission will also be
-                                    deleted.
-        choices (ManyToManyField): A many-to-many relationship with the Choice model, representing the choices selected
-                                    by the student in the submission.
+        lesson (ForeignKey): A reference to the Lesson model, indicating the lesson for which
+                                this submission is made.
+        choices (ManyToManyField): A many-to-many relationship with the Choice model, representing
+                                    the choices selected by the student in this submission.
     """
 
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    # enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
     choices = models.ManyToManyField(Choice)
