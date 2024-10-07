@@ -142,7 +142,6 @@ class Lesson(models.Model):
     title = models.CharField(null=False, max_length=200, default="title")
     order = models.IntegerField(default=0)
     content = models.TextField()
-    attempt = models.IntegerField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
 
 

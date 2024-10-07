@@ -213,10 +213,6 @@ def enroll(request: HttpRequest, course_id: int) -> HttpResponse | HttpResponseR
 
     # Redirect to the course details page if the user is authenticated and enrolled
     if user.is_authenticated and is_enrolled:
-        lessons = course.lesson_set.all()
-        for lesson in lessons:
-            lesson.attempt.set(3)
-            lesson.save()
         return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
 
     # Redirect to the login page if the user is not authenticated
