@@ -1,0 +1,546 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+
+@font-face {
+    font-family: "Linotte Semibold";
+    src: url("../fonts/Linotte-Semibold.otf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+}
+
+html {
+    height: 100vh;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    background-image: linear-gradient(to top, #93a5cf 0%, #e4efe9 100%);
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.btn-primary {
+    background-image: linear-gradient(-20deg, #00c6fb 0%, #005bea 100%);
+    border: none;
+}
+
+#no-course {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    text-align: center;
+    margin-bottom: 0;
+    font-size: 18px;
+    color: #1e3548;
+}
+
+.overlay-popup-authenticated,
+.overlay-popup-warning {
+    position: fixed;
+    top: 0;
+    display: none;
+    height: 100%;
+    width: 100%;
+    z-index: 2;
+}
+
+.overlay-popup-authenticated {
+    background: rgb(11 11 51 / 30%);
+}
+
+.overlay-popup-warning {
+    background-color: transparent;
+}
+
+.popup-after-auth {
+    position: fixed;
+    width: 100%;
+    top: -10%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    border-radius: 5px;
+    padding: 2rem 1.5rem;
+    z-index: 1;
+    background: aliceblue;
+    transition: all 2s cubic-bezier(0.84, 0.06, 0.52, 1.8);
+    box-shadow: 4px 4px 11px 0px rgba(30, 53, 72, 0.75);
+    -webkit-box-shadow: 4px 4px 11px 0px rgba(30, 53, 72, 0.75);
+    -moz-box-shadow: 4px 4px 11px 0px rgba(30, 53, 72, 0.75);
+}
+
+.icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    display: flex !important;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: #e6e9f0;
+    color: rebeccapurple;
+    border-radius: 50%;
+}
+
+.close-btn {
+    width: 1.2rem;
+    height: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: inherit;
+    color: rebeccapurple;
+    cursor: pointer;
+    border: none;
+    position: absolute;
+    right: 0.3rem;
+    top: 0.3rem;
+}
+
+.close-btn > span {
+    -webkit-transition: all ease 0.5s;
+    transition: all ease 0.5s;
+    font-weight: 800;
+}
+
+.close-btn:hover span {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+.content > h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #404656;
+}
+
+.content > p {
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.2rem;
+    color: #454952;
+    margin-top: 0.5rem;
+    text-align: justify;
+}
+
+@media screen and (min-width: 0) {
+    .popup-after-auth,
+    .popup-warning-card {
+        width: 90%;
+    }
+}
+
+@media screen and (min-width: 400px) {
+    .popup-warning-card {
+        width: 22rem;
+    }
+
+    .popup-after-auth {
+        width: 25rem;
+    }
+}
+
+.popup-warning-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    background: #f0f8ff;
+    box-shadow: 4px 4px 11px 0px rgba(30, 53, 72, 0.75);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.show {
+    visibility: visible;
+    animation: scaleIn 2s forwards;
+}
+
+.closed {
+    animation: scaleOut 2s forwards;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes scaleOut {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+.warning-content {
+    text-align: center;
+}
+
+.checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 5;
+    stroke: red;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px red;
+    animation: scale 2s ease-in-out infinite;
+    margin-bottom: 10px;
+}
+
+.checkmark_circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 5;
+    stroke-miterlimit: 10;
+    stroke: red;
+    fill: none;
+    animation: stroke 2s cubic-bezier(0.65, 0, 0.45, 1) infinite;
+}
+
+.checkmark_check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 2s cubic-bezier(0.65, 0, 0.45, 1) infinite;
+    stroke-linecap: round;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+@keyframes scale {
+    0%,
+    100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+/* Style for course list page */
+.grid-wrapper {
+    padding: 40px;
+    margin: 0 auto;
+    margin-top: 75px;
+    max-width: 1000px;
+    text-align: center;
+}
+
+#searchBar {
+    width: 100%;
+    height: 32px;
+    border-radius: 3px;
+    border: 1px solid #eaeaea;
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+#searchWrapper {
+    position: relative;
+}
+
+#searchWrapper::after {
+    content: "🔍";
+    position: absolute;
+    top: 8%;
+    right: 15px;
+    z-index: 1;
+}
+
+.row {
+    margin-top: 30px;
+    grid-row-gap: 20px;
+}
+
+.card#quiz {
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card#quiz:hover {
+    transform: translateY(-10px); /* Lifts the card on hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* Adds a stronger shadow */
+}
+
+#quiz .card-body {
+    text-align: left;
+    padding: 0;
+}
+
+.course-info {
+    display: flex;
+    background-color: #e6e9f0;
+    align-items: center;
+    min-height: 200px;
+    border-radius: 10px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.course-details p {
+    font-family: "Roboto Mono", sans-serif;
+    padding-left: 20px;
+}
+
+.course-details {
+    margin-top: 100px;
+}
+
+.course-details p {
+    font-weight: 500;
+    color: #011627;
+}
+
+.info-section {
+    width: 50%;
+}
+
+.label {
+    display: flex;
+    justify-content: space-evenly;
+    margin-left: 20px;
+    position: absolute;
+    top: 10px;
+    padding-left: 20px;
+    background-color: #1e3548;
+    margin-top: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 700;
+    width: 70px;
+    padding: 3px;
+}
+
+p {
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+.label p {
+    font-weight: 700;
+    color: #4f9e86;
+}
+
+.quiz-icon {
+    color: #ffffff;
+    width: 20px;
+    height: 20px;
+    /* position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 4px; */
+}
+
+#title {
+    font-family: "Linotte Semibold", sans-serif;
+    position: absolute;
+    width: 50%;
+    top: 35px;
+    margin-bottom: 0 !important;
+    padding-top: 20px;
+    padding-left: 20px;
+    font-size: 22px;
+}
+
+.course-desc p {
+    text-align: justify;
+}
+
+img.card-img-top {
+    width: 150px !important;
+    height: 150px !important;
+    margin-left: auto;
+    padding: 20px;
+}
+
+.image-section {
+    position: relative;
+    /* background-color: #fdf7f7; */
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: 20px;
+    right: 0;
+}
+
+.course-desc {
+    height: 200px;
+    overflow-y: auto;
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    padding: 20px;
+}
+
+.course-desc::-webkit-scrollbar {
+    display: none;
+}
+
+.cta-button {
+    width: fit-content;
+    margin: 20px;
+}
+
+/* Style for quiz detail page*/
+.breadcrumb {
+    margin-left: 2%;
+    margin-top: 125px;
+    margin-bottom: 30px;
+    font-size: 1rem;
+}
+
+.breadcrumb a {
+    text-decoration: none;
+    color: #2e8b57;
+    font-weight: 600;
+}
+
+.card-header {
+    background-color: #e6e9f0;
+}
+
+.card#lesson h5,
+.card#lesson h6 {
+    margin-bottom: 0;
+}
+
+.card-body {
+    padding-left: 20px;
+    padding-right: 20px;
+    min-height: fit-content;
+    text-align: justify;
+}
+
+.card > hr {
+    margin: 0 20px;
+}
+
+.quiz-action {
+    padding: 10px 20px;
+}
+
+button.btn-outline-info {
+    color: #005493;
+    border-color: #005493;
+}
+
+button.btn-outline-info:hover {
+    color: white;
+    background-color: #005493;
+    font-weight: 700;
+}
+
+/* Add responsiveness - make the columns appear on top of each other instead of next to each other on small screens */
+@media screen and (max-width: 440px) {
+    .course-info {
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+
+    .image-section {
+        order: 1;
+        margin-top: 20px;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .info-section {
+        order: 2;
+        width: 100%;
+    }
+
+    #title {
+        position: relative;
+        width: 100%;
+        top: 0;
+        text-align: center;
+        margin-bottom: 0 !important;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .course-details {
+        margin-top: 0;
+        padding: 10px;
+        padding-top: 0;
+        text-align: center;
+    }
+
+    .course-details p {
+        font-size: 12px;
+        padding-left: 0;
+    }
+
+    .label {
+        top: 0;
+        margin-top: 0;
+        margin-left: 0;
+    }
+
+    section.course-desc {
+        padding: 10px;
+    }
+
+    .cta-button {
+        margin: 10px;
+    }
+}
+
+@media screen and (min-width: 320px) and (max-width: 375px) {
+    #title {
+        font-size: 16px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+
+    .course-desc p {
+        font-size: 12px;
+    }
+}
+
+@media screen and (min-width: 376px) and (max-width: 440px) {
+    #title {
+        font-size: 20px;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #title {
+        font-size: 20px;
+    }
+
+    .course-details p {
+        font-size: 12px;
+    }
+}
