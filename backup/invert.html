@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                font-weight: bold;
+                font-size: 2em;
+            }
+
+            .container {
+                width: 400px;
+                border: 2px solid #a335b6;
+            }
+
+            .contents,
+            .bar {
+                height: 100px;
+            }
+
+            .backdrop {
+                position: relative;
+                background-color: #a335b6;
+            }
+
+            .source {
+                mix-blend-mode: screen;
+            }
+
+            .barBg {
+                background-color: white;
+            }
+
+            .bar {
+                background-color: black;
+            }
+
+            .contents {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                mix-blend-mode: difference;
+            }
+
+            html {
+                height: 100%;
+            }
+
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="backdrop">
+                <div class="source">
+                    <div class="barBg">
+                        <div class="bar" id="bar"></div>
+                    </div>
+                    <div class="contents">
+                        <span id="percent"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            // const barEl = document.getElementById("bar");
+            // const percentEl = document.getElementById("percent");
+            // const maxTime = 10 * 1000; // 10 seconds
+            // let startTime = -Infinity;
+            // let elapsedTime = -Infinity;
+
+            // function animate(time) {
+            //     if (startTime < 0 || elapsedTime >= maxTime) {
+            //         startTime = time;
+            //     }
+
+            //     elapsedTime = time - startTime;
+            //     const percent = `${Math.round((elapsedTime / maxTime) * 100)}%`;
+            //     percentEl.innerHTML = percent;
+            //     barEl.style.width = percent;
+            //     window.requestAnimationFrame(animate);
+            // }
+
+            // window.requestAnimationFrame(animate);
+        </script>
+    </body>
+</html>

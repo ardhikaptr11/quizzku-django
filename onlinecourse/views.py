@@ -37,122 +37,29 @@ The module also includes utility functions to check user enrollment status and e
 
 """
 
+import json
 import logging
+import random
+
+# import re
+from datetime import date
 from typing import List
 
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+# from django.contrib.auth import authenticate, login, logout
+# from django.contrib.auth import get_user_model
+from django.db.models import Count, Max, Q
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import generic
 
+from account.models import User
+
 # Import models
-from .models import Course, Enrollment, Lesson, Submission
+from .models import Attempt, Course, Enrollment, Lesson, Submission
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
-
-
-def registration_request(request: HttpRequest) -> HttpResponse:
-    """
-    Handles user registration requests.
-    This view function processes both GET and POST requests for user registration.
-    For GET requests, it renders the user registration template.
-    For POST requests, it attempts to create a new user with the provided username,
-    password, first name, and last name. If the username already exists, it returns
-    an error message indicating that the user already exists.
-    Args:
-        request (HttpRequest): The HTTP request object containing request data.
-    Returns:
-        HttpResponse: The HTTP response object with the rendered template or a redirect
-        to the index page upon successful registration.
-    """
-
-    # Context is a dictionary that is passed to the template
-    context = {}
-
-    if request.method == "GET":
-        return render(request, "onlinecourse/user_registration_bootstrap.html", context)
-    elif request.method == "POST":
-        # Send POST request from retrieved username, password, first name, and last name
-        username = request.POST["username"]
-        password = request.POST["psw"]
-        first_name = request.POST["firstname"]
-        last_name = request.POST["lastname"]
-        # Set initial state for user existence
-        user_exist = False
-
-        # Error handling for user existence
-        # Change the state if the user already exists
-        try:
-            User.objects.get(username=username)
-            user_exist = True
-        except User.DoesNotExist:
-            logger.error("New user")
-
-        # Create a new user if the user does not exist, otherwise return an error message
-        if not user_exist:
-            User.objects.create_user(
-                username=username,
-                first_name=first_name,
-                last_name=last_name,
-                password=password,
-            )
-            # login(request, user)
-            context["message"] = "Success! Please login to continue"
-            return render(request, template_name="onlinecourse/user_login_bootstrap.html", context=context)
-            # return redirect(to="onlinecourse:index")
-        else:
-            context["message"] = "User already exists."
-            return render(request, template_name="onlinecourse/user_registration_bootstrap.html", context=context)
-
-
-def login_request(request: HttpRequest) -> HttpResponseRedirect | HttpResponse:
-    """
-    Handle user login requests.
-    This view function processes login requests. If the request method is POST, it attempts to
-    authenticate the user with the provided username and password. If authentication is successful,
-    the user is logged in and redirected to the index page. If authentication fails, an error message
-    is added to the context and the login page is re-rendered. For GET requests, the login page is
-    rendered without any context.
-    Args:
-        request (HttpRequest): The HTTP request object containing request data.
-    Returns:
-        HttpResponse: The HTTP response object with the rendered login page or a redirect to the index page.
-    """
-
-    context = {}
-    if request.method == "POST":
-        # Send POST request from retrieved username and password, and send them to the authenticate function
-        username = request.POST["username"]
-        password = request.POST["psw"]
-        user = authenticate(username=username, password=password)  # Authenticate function to athenticate the user
-
-        # Check if user is authenticated
-        # Redirect to index page if user is authenticated, otherwise return an error message in the login page
-        if user is not None:
-            login(request, user)
-            return redirect(to="onlinecourse:index")
-        else:
-            context["message"] = "Invalid username or password."
-            return render(request, template_name="onlinecourse/user_login_bootstrap.html", context=context)
-    else:
-        return render(request, template_name="onlinecourse/user_login_bootstrap.html", context=context)
-
-
-def logout_request(request: HttpRequest) -> HttpResponseRedirect:
-    """
-    Handle the user logout request.
-    This view function logs out the current user and redirects them to the index page of the online course application.
-    Args:
-        request (HttpRequest): The HTTP request object that triggered this view.
-    Returns:
-        HttpResponseRedirect: A redirect response to the index page of the online course application.
-    """
-
-    logout(request)
-    return redirect(to="onlinecourse:index")
 
 
 def check_if_enrolled(user: User, course: Course) -> bool:
@@ -172,7 +79,7 @@ def check_if_enrolled(user: User, course: Course) -> bool:
 
     if user.id is not None:
         # Check if user enrolled, if user is enrolled the num of results will not be 0
-        num_results = Enrollment.objects.filter(user=user, course=course).count()
+        num_results = Enrollment.objects.filter(learner=user, course=course).count()
         if num_results > 0:
             is_enrolled = True
     return is_enrolled
@@ -180,8 +87,37 @@ def check_if_enrolled(user: User, course: Course) -> bool:
 
 # Generic class-based views
 class CourseListView(generic.ListView):
+    model = Course
     template_name = "onlinecourse/course_list_bootstrap.html"
     context_object_name = "course_list"
+
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+
+        if user.is_authenticated:
+            username = user.username
+            fullname = getattr(user, "full_name", None)
+
+            if not fullname:
+                return redirect(reverse("account:complete_profile") + f"?username={username}")
+
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        course_age = {}
+        context = super().get_context_data(**kwargs)
+
+        for course in context["course_list"]:
+            last_created = date.today() - course.pub_date
+            course_age[course.id] = last_created.days
+
+        context["completion_percentage"] = user.completion_percentage() if user.is_authenticated else 0
+        context["course_age"] = course_age
+        context["attempt_limit"] = self.request.session.get("attempt_limit", False)
+        context["from_registration"] = self.request.session.get("from_registration", False)
+
+        return context
 
     def get_queryset(self):
         user = self.request.user
@@ -195,36 +131,91 @@ class CourseListView(generic.ListView):
 class CourseDetailView(generic.DetailView):
     model = Course
     template_name = "onlinecourse/course_detail_bootstrap.html"
+    slug_field = "slug_name"
+    slug_url_kwarg = "course_slug"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("account:getting_started")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        course = self.get_object()
+        lessons = course.lessons.all()
+
+        lesson_attempts = {}
+
+        for lesson in lessons:
+            attempt = Attempt.objects.filter(learner=user, lesson=lesson).last()
+            if attempt:
+                lesson_attempts[lesson.id] = attempt.remaining_attempts
+            else:
+                lesson_attempts[lesson.id] = lesson.total_attempt
+
+        context["completion_percentage"] = user.completion_percentage() if user.is_authenticated else 0
+        context["lesson_attempts"] = lesson_attempts
+        return context
 
 
-def enroll(request: HttpRequest, course_id: int) -> HttpResponse | HttpResponseRedirect:
-    course = get_object_or_404(Course, pk=course_id)  # Get the Course object based on the course_id
+def enroll(request: HttpRequest, course_slug: str) -> HttpResponse | HttpResponseRedirect:
     user = request.user
+    course = get_object_or_404(Course, slug_name=course_slug)  # Get the Course object based on the course_id
 
     # Helper function to check if the user is enrolled
     is_enrolled = check_if_enrolled(user, course)
 
-    # Create an enrollment if the user is authenticated and not enrolled
-    if not is_enrolled and user.is_authenticated:
-        Enrollment.objects.create(user=user, course=course, mode="honor")
-        course.total_enrollment += 1
-        course.save()
-        return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
+    if request.method == "GET":
+        # Create an enrollment if the user is authenticated and not enrolled
+        if not is_enrolled and user.is_authenticated:
+            Enrollment.objects.create(learner=user, course=course, mode="honor")
+            course.total_enrollment += 1
+            course.save()
+            return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course_slug,)))
 
-    # Redirect to the course details page if the user is authenticated and enrolled
-    if user.is_authenticated and is_enrolled:
-        return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course.id,)))
+        # Redirect to the course details page if the user is authenticated and enrolled
+        if user.is_authenticated and is_enrolled:
+            return HttpResponseRedirect(reverse(viewname="onlinecourse:course_details", args=(course_slug,)))
 
-    # Redirect to the login page if the user is not authenticated
-    message = "Oops! You're not logged in."
-    return render(request, template_name="onlinecourse/user_login_bootstrap.html", context={"message": message})
+        # Redirect to the login page if the user is not authenticated
+        # return render(
+        #     request,
+        #     template_name="getting_started.html",
+        #     context={"not_authenticated": "Oops! You're not logged in."},
+        # )
 
 
-def start_exam(request: HttpRequest, course_id: int) -> HttpResponse:
-    context = {}
+def start_quiz(request: HttpRequest, course_slug) -> HttpResponse:
+    user = request.user
+
+    # Filter user's enrollment for specific course
+    enrollment = user.enrollments.filter(course__slug_name=course_slug)
+
+    # Get the total number of attempts for a user on a particular lesson in the course.
+    total_attempts = (
+        enrollment.aggregate(
+            total_attempts=Count("course__lessons__attempts", filter=Q(course__lessons__attempts__learner=user))
+        )["total_attempts"]
+        or 0
+    )
+
+    # When the user is not logged in, render the getting_started page with a warning message
+    if request.method == "GET" and not user.is_authenticated:
+        return render(
+            request,
+            template_name="getting_started.html",
+            context={"not_authenticated": "Oops! You're not logged in."},
+        )
+
+    # When the user is logged in and already attempted the quiz 3 times, prevent them from attempting the quiz again
+    # This will keep the attempt data consistent, where no user has more than 3 attempts on a lesson
+    elif request.method == "GET" and total_attempts == 3 and not user.is_superuser:
+        request.session["attempt_limit"] = True
+        return HttpResponseRedirect(reverse(viewname="onlinecourse:index"))
 
     # Retrieve the course based on the course_id
-    course = get_object_or_404(Course, pk=course_id)
+    course = get_object_or_404(Course, slug_name=course_slug)
 
     # Retrieve the lesson name from the query parameter
     lesson_title = request.GET.get("name", "").strip()
@@ -238,18 +229,39 @@ def start_exam(request: HttpRequest, course_id: int) -> HttpResponse:
 
     # Ensure that Question model has a ForeignKey to Lesson
     # Assuming Question has a ForeignKey to Lesson with related_name='questions'
-    questions = lesson.question_set.all()
 
-    # Prepare the context for the template
-    context["course"] = course
-    context["lesson"] = lesson
-    context["questions"] = questions
+    attempt = Attempt.objects.filter(learner=user, lesson=lesson)
+    attempt_no = 1 if not attempt.exists() else attempt.last().attempt_no + 1
+    random.seed(f"{date.today()}-{user.id}-{lesson.id}-{attempt_no}")
 
-    return render(request, "onlinecourse/exam_page.html", context=context)
+    questions = list(lesson.questions.prefetch_related("choices"))
+    random.shuffle(questions)
+
+    quiz_data = [{"question": question, "choices": list(question.choices.all())} for question in questions]
+
+    for item in quiz_data:
+        if len(item["choices"]) > 2:
+            random.shuffle(item["choices"])
+
+    is_binary_question = {question.id: question.choices.count() == 2 for question in questions}
+
+    context = {
+        "course": course,
+        "lesson": lesson,
+        "quiz_data": quiz_data,
+        "is_binary_question": is_binary_question,
+    }
+
+    response = render(request, template_name="onlinecourse/quiz_page.html", context=context)
+    response.set_cookie("is_binary_question", json.dumps(is_binary_question))
+    print(response.cookies["is_binary_question"])
+    print(response.cookies["is_binary_question"].value)
+
+    return response
 
 
 # Create a submit view to create an exam submission record for a course enrollment
-def submit(request: HttpRequest, course_id: int, lesson_id: int) -> HttpResponseRedirect:
+def submit(request: HttpRequest, course_slug) -> HttpResponseRedirect:
     """
     Handles the submission of an exam for a specific course by a user.
     The function retrieves the course and user information, gets the corresponding enrollment object,
@@ -261,25 +273,54 @@ def submit(request: HttpRequest, course_id: int, lesson_id: int) -> HttpResponse
     Returns:
         HttpResponseRedirect: A redirect response to the exam result page with the course ID and submission ID.
     """
-    user = request.user
 
-    # course = get_object_or_404(Course, pk=course_id)
-    enrollment = get_object_or_404(Enrollment, user=user, course__id=course_id)
-    lesson = get_object_or_404(Lesson, pk=lesson_id, course=enrollment.course)
-    # Get the Enrollment object for the user and course
-    # lesson = enrollment.course.lesson_set.filter(pk=lesson_id)
-    # Create Submission object for the enrollment
-    submission = Submission.objects.create(lesson=lesson)
-    submission_id = submission.id
-    # Associate selected choices with the submission
-    choices = extract_answers(request)
-    submission.choices.set(choices)
-    submission_id = submission.id
-    return HttpResponseRedirect(reverse(viewname="onlinecourse:exam_result", args=(course_id, submission_id)))
+    if request.method == "POST":
+        user = request.user
+        course = get_object_or_404(Course, slug_name=course_slug)
+
+        data = json.loads(request.body)
+
+        lesson_title = data.get("lessonTitle", "").strip()
+
+        lesson = get_object_or_404(Lesson, title=lesson_title, course=course)
+
+        attempts = Attempt.objects.filter(learner=user, lesson=lesson)
+
+        if not attempts.exists():
+            attempt_idx = 1
+            attempt = Attempt.create_attempt(learner=user, lesson=lesson, attempt_no=attempt_idx)
+            attempt.decrease_attempt()
+        else:
+            last_attempt = attempts.last()
+            attempt_idx = last_attempt.attempt_no + 1
+
+            if user.is_superuser:
+                remaining_attempts = 3
+            else:
+                remaining_attempts = last_attempt.remaining_attempts - 1
+                if last_attempt.attempt_no == 3:
+                    return redirect("onlinecourse:index")
+
+            attempt = Attempt.create_attempt(
+                learner=user, lesson=lesson, attempt_no=attempt_idx, remaining_attempts=remaining_attempts
+            )
+
+        selected_choices = extract_answers(data)
+
+        submission = Submission.objects.create(attempt=attempt, lesson=lesson)
+        submission.choices.set(selected_choices)
+        submission.save()
+
+        quiz_result_url = (
+            reverse("onlinecourse:exam_result", args=(course_slug,)) + f"?name={lesson_title}&attempt={attempt_idx}"
+        )
+
+        return JsonResponse({"success": True, "quiz_result_url": quiz_result_url}, status=200)
+    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
 
 
 # A method to collect the selected choices from the exam form from the request object
-def extract_answers(request: HttpRequest) -> List[int]:
+def extract_answers(data: dict) -> List[int]:
     """
     Extracts submitted answers from an HTTP POST request.
     This function iterates over the keys in the POST data of the given request,
@@ -292,17 +333,77 @@ def extract_answers(request: HttpRequest) -> List[int]:
         List[int]: A list of integers representing the IDs of the submitted choices.
     """
 
-    submitted_anwsers = []
-    for key in request.POST:
-        if key.startswith("choice"):
-            value = request.POST[key]
-            choice_id = int(value)
-            submitted_anwsers.append(choice_id)
-    return submitted_anwsers
+    submitted_answers = []
+    choices = data.get("choices", {})
+
+    for selected_ids in choices.values():
+        submitted_answers.extend([int(choice_id) for choice_id in selected_ids if choice_id.isdigit()])
+
+    return submitted_answers
+
+
+def calculate_grade(questions, choices):
+    total_grade = 0
+    grade_per_question = {}
+
+    all_empty = all(not choices.filter(question=question).exists() for question in questions)
+
+    if all_empty:
+        for question in questions:
+            if question.expect_multiple_answer:
+                grade = 50
+            else:
+                grade = 0
+            grade_per_question[question.id] = int(grade / 100) if grade in [0, 100] else grade / 100
+            total_grade += grade
+        quiz_grade = total_grade / max(questions.count(), 1)
+        return quiz_grade, grade_per_question
+
+    for question in questions:
+        grade = question.grade
+
+        selected_choices = choices.filter(question=question)
+        correct_choices = question.choices.filter(is_correct=True)
+        user_correct_choices = selected_choices.filter(is_correct=True)
+
+        if question.expect_multiple_answer:
+            score_if_empty = 50
+            point_per_choice = grade / max(question.choices.count(), 1)
+            incorrect_choices = abs(len(selected_choices) - len(user_correct_choices))
+
+            if not selected_choices:
+                grade = score_if_empty
+            elif len(selected_choices) == len(correct_choices):
+                grade = (
+                    grade
+                    if set(selected_choices) == set(correct_choices)
+                    else grade - incorrect_choices * point_per_choice
+                )
+            elif len(selected_choices) < len(correct_choices):
+                grade = score_if_empty + len(user_correct_choices) * point_per_choice
+            else:
+                grade = (
+                    score_if_empty + len(user_correct_choices) * point_per_choice - incorrect_choices * point_per_choice
+                )
+        else:
+            grade = grade if set(correct_choices) == set(selected_choices) else 0
+
+        grade_per_question[question.id] = int(grade / 100) if grade in [0, 100] else grade / 100
+        total_grade += grade
+
+    quiz_grade = total_grade / max(questions.count(), 1)
+    return quiz_grade, grade_per_question
+
+
+def get_highest_grade(request: HttpRequest, lesson):
+    user = request.user
+    submission = Submission.objects.filter(lesson=lesson, attempt__learner=user)
+    highest_grade = submission.aggregate(highest_grade=Max("grade"))["highest_grade"]
+    return highest_grade
 
 
 # Create an exam result view to check if learner passed exam and show their question results and result for each question
-def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -> HttpResponse:
+def show_exam_result(request: HttpRequest, course_slug) -> HttpResponse:
     """
     Display the exam result for a specific course and submission.
     The function retrieves the course and submission objects based on the provided IDs. It then calculates the total
@@ -317,68 +418,60 @@ def show_exam_result(request: HttpRequest, course_id: int, submission_id: int) -
         HttpResponse: The HTTP response with the rendered exam result page.
     """
 
-    context = {}
+    if request.method == "GET" and not request.user.is_authenticated:
+        return render(
+            request,
+            "getting_started.html",
+            context={"not_authenticated": "Oops! You're not logged in."},
+        )
 
-    course = get_object_or_404(Course, pk=course_id)
-    submission = get_object_or_404(Submission, pk=submission_id)
-    lesson = submission.lesson
-    questions = lesson.question_set.all()
-    choices = submission.choices.all()
+    user = request.user
+    attempt_index = request.GET.get("attempt")
+    lesson_title = request.GET.get("name")
 
-    total_score = 0
+    if not attempt_index:
+        return HttpResponse("Attempt index is required.", status=400)
 
-    # Calculate total score by comparing selected choices with correct choices for each question
-    for question in questions:
-        correct_choices = question.choice_set.filter(is_correct=True)  # Question's correct choices
-        selected_choices = choices.filter(question=question)  # User selected choices
-        user_correct_choices = selected_choices.filter(is_correct=True)  # User selected correct choices
+    course = get_object_or_404(Course, slug_name=course_slug)
+    lesson = get_object_or_404(Lesson, title=lesson_title, course=course)
 
-        if question.expect_multiple_answer:
-            score_if_empty = 50
-            point_per_choice = question.grade / question.choice_set.count()  # Point of each choice
-            diff = abs(len(selected_choices) - len(user_correct_choices))  # Total incorrect choices selected by user
+    attempt = get_object_or_404(Attempt, learner=user, lesson=lesson, attempt_no=attempt_index)
+    submission = get_object_or_404(Submission, attempt=attempt, lesson=lesson)
+    submission_date = submission.submission_date.strftime("%Y-%m-%d")
 
-            if len(selected_choices) == len(correct_choices):
-                # Check if all the selected choices are correct
-                # If all the selected choices are correct, the question will have the full grade
-                # Otherwise, the grade will be reduced by the total point of incorrect choices
-                question_grade = (
-                    question.grade
-                    if set(selected_choices) == set(correct_choices)
-                    else question.grade - diff * point_per_choice
-                )
-                total_score += question_grade
+    random.seed(f"{date.today()}-{user.id}-{lesson.id}-{attempt_index}")
+    questions = lesson.questions.prefetch_related("choices")
+    question_list = list(questions)
+    random.shuffle(question_list)
 
-            if not selected_choices:  # No choice is selected
-                question.grade = score_if_empty
-                total_score += question.grade
-            elif len(selected_choices) < len(correct_choices):  # Selected choices are less than correct choices
-                question.grade = score_if_empty + (len(user_correct_choices) * point_per_choice)
-                total_score += question.grade
-            elif len(selected_choices) > len(correct_choices):  # Selected choices are more than correct choices
-                question.grade = (
-                    score_if_empty + (len(user_correct_choices) * point_per_choice) - diff * point_per_choice
-                )
-                total_score += question.grade
-        else:
-            if not selected_choices:
-                question_grade = 0
-                total_score += question_grade
-                context["question_grade"] = question_grade
+    selected_choices = submission.choices.all()
+    quiz_data = [
+        {"selected_choices": selected_choices, "question": question, "choices": list(question.choices.all())}
+        for question in question_list
+    ]
 
-            if set(correct_choices) == set(selected_choices):
-                total_score += question.grade
+    for item in quiz_data:
+        if len(item["choices"]) > 2:
+            random.shuffle(item["choices"])
 
-    total_score /= len(questions)
+    _, grade_per_question = calculate_grade(questions, selected_choices)
 
     # Add courses, total scores, and choices to the context dictionary for further use within the template
-    context["course"] = course
-    context["lesson"] = lesson
-    context["grade"] = int(total_score) if total_score % 2 == 0 else round(total_score, 3)
-    context["choices"] = choices
+    context = {
+        "course": course,
+        "lesson": lesson,
+        "quiz_data": quiz_data,
+        "submission": submission,
+        "grade": int(submission.grade) if submission.grade % 2 == 0 else round(submission.grade, 3),
+        "question_grade": grade_per_question,
+        "highest_grade": get_highest_grade(request, lesson),
+        "user": user,
+        "attempt_left": attempt.remaining_attempts,
+        "submission_date": submission_date,
+    }
 
-    return render(request, template_name="onlinecourse/exam_result_bootstrap.html", context=context)
+    context["is_binary_question"] = {
+        int(key): value for key, value in json.loads(request.COOKIES["is_binary_question"]).items()
+    }
 
-
-def calculate_score():
-    pass
+    return render(request, template_name="onlinecourse/quiz_result.html", context=context)

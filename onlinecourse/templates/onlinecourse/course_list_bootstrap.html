@@ -1,96 +1,173 @@
+{% load static %} {% load custom_tag %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        {% load static %}
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="{% static 'course.css' %}" />
+        <!-- Bootstrap -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous"
+        />
+        <!-- End of bootstrap -->
+        <!-- Stylesheet -->
+        <link rel="stylesheet" href="{% static 'onlinecourse/course.css' %}" />
+        <!-- End of stylesheet -->
+        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
             href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap"
             rel="stylesheet"
         />
+        <!-- End of fonts -->
+        <!-- Icons -->
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=waving_hand"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=close"
+        />
+        <link rel="icon" type="image/x-icon" href="{% static 'media/course_images/favicon.ico' %}" />
+        <!-- End of Icons -->
         <meta charset="UTF-8" />
-        <title>Online Courses</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Quizzku - {{ user.username }}</title>
     </head>
     <body>
-        <!-- Navigation bar -->
-        <nav class="navbar navbar-light bg-light">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a
-                        class="navbar-brand"
-                        href="#"
-                        style="
-                            font-family: 'Roboto Mono', monospace;
-                            font-weight: 700;
-                            font-style: italic;
-                            color: #065292;
-                        "
-                        >QUIZZ<span style="color: #0c8901">KU</span></a
-                    >
-                </div>
-                <ul class="nav navbar-nav navbar-right">
-                    {% if user.is_authenticated %}
-                    <li>
-                        <a class="btn" href="#">{{ user.first_name }} ({{ user.username }})</a>
-                        <a class="btn btn-outline-primary" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                    </li>
-                    {% else %}
-                    <li>
-                        <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                            {% csrf_token %}
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Username" name="username" />
-                                <input type="password" class="form-control" placeholder="Password" name="psw" />
-                                <div class="dropdown">
-                                    <button class="btn btn-primary dropbtn" type="submit">Login</button>
-                                    <div class="dropdown-content">
-                                        <a href="{% url 'onlinecourse:registration' %}">Sign Up</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
+        <header>{% include 'onlinecourse/navbar.html' %}</header>
+        <!-- Popup -->
+        {% if user.is_authenticated %}
+        <div class="overlay-popup-authenticated">
+            <div class="popup-after-auth">
+                <button class="close-btn">
+                    <span class="material-symbols-rounded"> close </span>
+                </button>
 
+                <div class="icon">
+                    <span class="material-symbols-outlined hand-wave"> waving_hand </span>
+                </div>
+
+                <div class="content">
+                    {% if from_registration %}
+                    <h3>Welcome Abroad, {{ user.nickname }}!</h3>
+                    <p>
+                        We're glad you're now part of us. One more step - You can complete your profile by clicking on the profile icon on the top right corner.
+                    </p>
+                    {% else %}
+                    <h3>Welcome back, {{ user.nickname }}!</h3>
+                    <p>
+                        This is an automatic popup window. It appears because you're successfully logged in. You can
+                        close this popup by clicking on the close icon on top right corner.
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <script src="{% static 'javascript/sessionCheck.js' %}"></script>
+        {% endif %}
+        <div class="overlay-popup-warning">
+            <div class="{% if attempt_limit %}show{% endif %} popup-warning-card">
+                <button class="close-btn">
+                    <span class="material-symbols-rounded"> close </span>
+                </button>
+                <div class="animated-icon">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark_circle" cx="26" cy="26" r="25" fill="none" />
+                        <path class="checkmark_check" fill="none" d="M14.1 14.1l23.8 23.8 m0,-23.8 l-23.8,23.8" />
+                    </svg>
+                </div>
+                <div class="warning-content">
+                    <h5>Oops! Don't try to cheat.</h5>
+                    <p>
+                        You have reached the limit of attempts for this quiz. You can't take this quiz anymore. Please
+                        contact your instructor for further information.
+                    </p>
+                </div>
+            </div>
+        </div>
         <!-- Page content -->
         {% if course_list %}
-        <div class="container">
-            <div class="card-deck">
+        <div class="grid-wrapper">
+            <div id="searchWrapper">
+                <input type="text" name="searchBar" id="searchBar" placeholder="Search for a quiz" />
+            </div>
+            <div class="row">
                 {% for course in course_list %}
-                <div class="card" style="width: 36rem">
-                    <img
-                        class="card-img-left"
-                        src="{{MEDIA_URL}}/{{ course.image }}"
-                        width="240px"
-                        height="240px"
-                        alt="Course image"
-                    />
-                    <div class="card-body bg-light">
-                        <h5 class="card-title">
-                            {{ course.name }},
-                            <span class="text-success"> {{ course.total_enrollment}} enrolled</span>
-                        </h5>
-                        <p class="card-text">{{ course.description}}</p>
-                        <form action="{% url 'onlinecourse:enroll' course.id %}" method="post">
-                            {% csrf_token %}
-                            <input
-                                class="btn btn-primary"
-                                type="submit"
-                                value="{% if course.is_enrolled %}Enter{% else %}Enroll{% endif %}"
-                            />
-                        </form>
+                <div class="col-md-6 mb-3 mb-sm-0 course-item" data-course-name="{{ course.name|lower }}">
+                    <div class="card" id="quiz">
+                        <div class="card-body">
+                            <section class="course-info">
+                                <div class="info-section">
+                                    <div class="label">
+                                        <ion-icon name="extension-puzzle-outline" class="quiz-icon"></ion-icon>
+                                        <p>Quiz</p>
+                                    </div>
+                                    {% for instructor in course.instructors.all %}
+                                    <h3 id="title">{{ course.name }}</h3>
+                                    <div class="course-details" data-instructor="{{ instructor|lower }}">
+                                        {% if course_age|get_item:course.id == 0 %}
+                                        <p>Created: Today</p>
+                                        {% elif course_age|get_item:course.id == 1 %}
+                                        <p>Created: A day ago</p>
+                                        {% elif course_age|get_item:course.id < 30 %}
+                                        <p>Created: {{ course_age|get_item:course.id }} days ago</p>
+                                        {% else %}
+                                        <p>Created: A month ago</p>
+                                        {% endif %}
+                                        <p>Student enrolled: {{ course.total_enrollment }}</p>
+                                        <p>
+                                            Created by: {{ instructor.user.nickname }}
+                                        </p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="image-section">
+                                    <img src="{{ course.image.url }}" class="card-img-top" alt="Course image" />
+                                </div>
+                            </section>
+                            <section class="course-desc">
+                                <p>{{ course.description }}</p>
+                            </section>
+                        </div>
+                        <div class="cta-button">
+                            {% if user.is_authenticated %}
+                            <form action="{% url 'onlinecourse:enroll' course.slug_name %}">
+                                {% if course.is_enrolled %}
+                                <button class="btn btn-primary btn-block" type="submit">Enter</button>
+                                {% else %}
+                                <button class="btn btn-primary" type="submit">Enroll</button>
+                                {% endif %}
+                            </form>
+                            {% else %}
+                            <form action="{% url 'account:getting_started' %}" id="enroll-not-authenticated">
+                                <button class="btn btn-primary btn-block" type="submit">Enroll</button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
         {% else %}
-        <p>No courses are available.</p>
+        <p id="no-course">No courses are available</p>
         {% endif %}
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"
+        ></script>
+        <script src="{% static 'javascript/course.js' %}"></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     </body>
 </html>
+
+<!-- Will be implemented when needed -->
+<!-- <div class="pagination">
+        <button id="prev">Previous</button>
+        <span id="page-number"></span>
+        <button id="next">Next</button>
+    </div> -->

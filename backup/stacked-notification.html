@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Stacked Notifications with Progress Bar</title>
+        <style>
+            /* General Styling */
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+            }
+            /* Login Form */
+            .login-form {
+                width: 300px;
+                padding: 20px;
+                background-color: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+                text-align: center;
+            }
+            .login-form input {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+            .login-form button {
+                padding: 10px;
+                width: 100%;
+                background-color: #4caf50;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            .login-form button:hover {
+                background-color: #45a049;
+            }
+            /* Notification Area */
+            .notification-area {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                width: 300px;
+                height: 180px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                overflow: hidden;
+            }
+            /* Notification Box */
+            .notification {
+                padding: 15px;
+                background-color: #f44336;
+                color: #fff;
+                border-radius: 5px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                position: relative;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+                opacity: 1;
+            }
+            .notification.hide {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            /* Progress Bar */
+            .progress-bar-container {
+                width: 100%;
+                height: 5px;
+                background-color: rgba(255, 255, 255, 0.3);
+                border-radius: 2px;
+                overflow: hidden;
+                margin-top: 10px;
+            }
+            .progress-bar {
+                height: 100%;
+                background-color: #4caf50;
+                width: 100%;
+                transition: width linear;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="login-form">
+            <h3>Login</h3>
+            <input type="text" id="username" placeholder="Username" />
+            <input type="password" id="password" placeholder="Password" />
+            <button onclick="submitForm()">Submit</button>
+        </div>
+
+        <div class="notification-area" id="notificationArea"></div>
+
+        <script>
+            // Handle form submission
+            function submitForm() {
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                // Simulate an invalid login
+                if (username !== "admin" || password !== "admin123") {
+                    showNotification("Invalid username or password!");
+                }
+            }
+
+            // Show notification
+            function showNotification(message) {
+                const notificationArea = document.getElementById("notificationArea");
+
+                // Create a new notification element
+                const notification = document.createElement("div");
+                notification.className = "notification";
+
+                // Add message content
+                const messageContent = document.createElement("p");
+                messageContent.textContent = message;
+                notification.appendChild(messageContent);
+
+                // Add progress bar
+                const progressBarContainer = document.createElement("div");
+                progressBarContainer.className = "progress-bar-container";
+                const progressBar = document.createElement("div");
+                progressBar.className = "progress-bar";
+                progressBar.style.transitionDuration = "3s"; // Duration of the progress bar
+                progressBarContainer.appendChild(progressBar);
+                notification.appendChild(progressBarContainer);
+
+                // Add the notification to the notification area
+                notificationArea.appendChild(notification);
+
+                // Start the progress bar animation
+                setTimeout(() => {
+                    progressBar.style.width = "0%";
+                }, 100);
+
+                // Set a timer to remove the notification after 3 seconds
+                setTimeout(() => {
+                    // Start fade-out animation
+                    notification.classList.add("hide");
+
+                    // Remove notification after fade-out (300ms) and adjust stack
+                    setTimeout(() => {
+                        notification.remove();
+                        adjustStack();
+                    }, 300);
+                }, 3000);
+            }
+
+            // Adjust stack when a notification is removed
+            function adjustStack() {
+                const notificationArea = document.getElementById("notificationArea");
+                const notifications = notificationArea.children;
+
+                // Recalculate the positions of all notifications
+                for (let i = 0; i < notifications.length; i++) {
+                    notifications[i].style.transform = `translateY(${i * 60}px)`;
+                }
+            }
+        </script>
+    </body>
+</html>

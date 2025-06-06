@@ -1,0 +1,118 @@
+{% extends 'onlinecourse/quiz_base_template.html' %} {% load custom_tag %}
+<!-- Tab title -->
+{% block title %}Quizzku: Result{% endblock %}
+<!-- Navbar -->
+{% block navigation_action %}
+<div class="icon">
+    <a href="{% url 'onlinecourse:index' %}">
+        <ion-icon name="close-outline" class="close-icon"></ion-icon>
+    </a>
+</div>
+{% endblock %}
+<!-- Date -->
+{% block date %}
+<p><strong>Date:</strong> {{ submission_date }}</p>
+{% endblock %}
+<!-- Navbar result -->
+{% block navbar_result %}
+<div class="result-wrapper {% if grade > 60 %}success{% else %}alert{% endif %}">
+    <div class="result-container">
+        <div class="outer-result-navbar">
+            <div class="inner-result-navbar">
+                <div class="result-info">
+                    <h2>
+                        <strong>
+                            Your grade:
+                            <span class="{% if grade > 60 %}grade-passed{% else %}grade-failed{% endif %}">
+                                {{ grade }}%
+                            </span>
+                        </strong>
+                    </h2>
+                    <div class="grade-container">
+                        <div class="grade-point">
+                            <h5><b>Latest grade: </b>{{ grade }}%</h5>
+                            <h5>&bull;</h5>
+                            <h5><b>Highest grade: </b>{{ highest_grade }}%</h5>
+                        </div>
+                        <h5>&bull;</h5>
+                        <div class="grade-message">
+                            {% if grade > 60 %}
+                            <h5>Congratulations, you passed this quiz!</h5>
+                            {% else %}
+                            <h5>Sorry, you failed this quiz!</h5>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if grade < 60 %}
+                <form class="retest-btn" action="{% url 'onlinecourse:quiz_page' course.slug_name %}">
+                    <input type="hidden" name="name" value="{{ lesson.title }}" />
+                    <input type="submit" value="Re-test" />
+                </form>
+                {% endif %}
+            </div>
+            <!-- <div class="grade"></div> -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- Quiz content -->
+{% block content %} {% for data in quiz_data %}
+<div class="question" role="group">
+    <div class="header-wrapper">
+        <div class="question-header">
+            <div class="question-number">
+                <h3>{{ forloop.counter }}.</h3>
+            </div>
+            <div class="question-text">
+                <p>{{data.question.question_text}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="question-choice">
+        <div class="left-space"></div>
+        <div class="choices" role="group">
+            {% for choice in data.choices %}
+            <div class="choice-wrapper">
+                <div class="choice">
+                    <label class="choice-option">
+                        {% if not data.question.expect_multiple_answer %}
+                        <!-- prettier-ignore -->
+                        <input 
+                            type="radio" 
+                            name="choice_{{ data.question.id }}" 
+                            value="{{ choice.id }}"
+                            class="{% if choice.is_correct and choice in data.selected_choices %}correct{% elif not choice.is_correct %}incorrect{% endif %}"
+                            {% if choice in data.selected_choices %}checked{% endif %}
+                            disabled
+                        />
+                        <span class="radio-btn"></span>
+                        {% else %}
+                        <!-- prettier-ignore -->
+                        <input 
+                            type="checkbox" 
+                            name="choice__{{ choice.id }}" 
+                            value="{{ choice.id }}" 
+                            class="{% if choice.is_correct and choice in data.selected_choices %}correct{% elif not choice.is_correct and choice in data.selected_choices %}less-precise{% else %}not-selected{% endif %}"
+                            {% if choice in data.selected_choices %}checked{% endif %}
+                            disabled  
+                        />
+                        <span class="checkbox-btn"></span>
+                        {% endif %}
+                        {% if is_binary_question|get_item:data.question.id == False %}
+                        <span class="alphabet">{{ forloop.counter|to_alphabet }}</span>
+                        <span class="choice-text"> {{ choice.choice_text }}</span>
+                        {% else %}
+                        <span class="choice-text binary"> {{ choice.choice_text }}</span>
+                        {% endif %}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="question-point">
+        <span class="point-value"> {{ question_grade|get_item:data.question.id }} / 1 point</span>
+    </div>
+</div>
+{% endfor %} {% endblock %} {% block scripts %} {{ block.super }} {% endblock %}

@@ -27,22 +27,30 @@ from . import views
 
 # Application namespace
 app_name = "onlinecourse"
-# List of valid URL patterns
+
 urlpatterns = [
     path(route="", view=views.CourseListView.as_view(), name="index"),
-    path(route="<int:pk>/", view=views.CourseDetailView.as_view(), name="course_details"),
-    path(route="registration/", view=views.registration_request, name="registration"),
-    path(route="login/", view=views.login_request, name="login"),
-    path(route="logout/", view=views.logout_request, name="logout"),
-    path(route="enroll/<int:course_id>/", view=views.enroll, name="enroll"),
-    path(route="quiz/<int:course_id>/lesson/", view=views.start_exam, name="quiz_page"),
-    path(route="quiz/<int:course_id>/lesson/<int:lesson_id>/submit/", view=views.submit, name="submit"),
-    # path(route="<int:course_id>/submit/", view=views.submit, name="submit"),
+    path(route="<slug:course_slug>/enroll/", view=views.enroll, name="enroll"),
+    path(route="<slug:course_slug>/", view=views.CourseDetailView.as_view(), name="course_details"),
+    path(route="<slug:course_slug>/lesson/", view=views.start_quiz, name="quiz_page"),
+    path(route="<slug:course_slug>/lesson/submit/", view=views.submit, name="submit"),
     path(
-        route="quiz/<int:course_id>/submission/<int:submission_id>/",
+        route="<slug:course_slug>/lesson/result/",
         view=views.show_exam_result,
         name="exam_result",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+
+# path(route="<int:course_id>/lesson/<int:lesson_id>/submit/", view=views.submit, name="submit"),
+# path(
+#     route="onlinecourse/quiz/<int:course_id>/lesson/result/",
+#     view=views.show_exam_result,
+#     name="exam_result",
+# ),
+# enroll/<int:course_id>/
+# quiz/<int:pk>/
+# route="quiz/<int:course_id>/lesson/<int:lesson_id>/result/",
+# path('onlinecourse/quiz/<int:quiz_id>/lesson/result/', views.quiz_result, name='quiz_result')
 # http://localhost:8000/onlinecourse/exam/1/lesson/1/result?submission=1
+# http://localhost:8000/onlinecourse/quiz/4/lesson/result?name=Javascript+Fundamental&attempt=1

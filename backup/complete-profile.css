@@ -1,0 +1,179 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+}
+
+/* Container to hold lanyard and ID Card */
+.card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Lanyard Styling for the two straps */
+.lanyard {
+    width: 100px;
+    height: 300px;
+    background: #4f9e86;
+    transform: rotate(180deg);
+    position: absolute;
+    top: -60%;
+    z-index: -1;
+}
+
+/* .lanyard.left {
+    left: 40px;
+    transform-origin: top left;
+}
+
+.lanyard.right {
+    right: 40px;
+    transform: rotate(-45deg);
+    transform-origin: top right;
+} */
+
+/* ID Card Styling */
+.id-card {
+    width: 600px;
+    background-color: #1e3548;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto auto;
+    column-gap: 20px;
+    padding: 20px;
+}
+
+.profile-image-container {
+    grid-row: 1 / span 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.mask {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background-attachment: fixed;
+    opacity: 0;
+    background-color: rgb(16 113 191 / 30%);
+    transition: all 0.4s ease-in-out;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.mask h3 {
+    color: #fefefe;
+}
+
+.mask:hover {
+    opacity: 1;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.upload-label {
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+/* Profile Information Styling */
+.id-info h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    grid-column: 2 / span 1;
+}
+
+.name-row {
+    display: flex;
+    justify-content: space-between;
+    grid-column: 2 / span 1;
+    gap: 10px;
+}
+
+.id-info p {
+    font-size: 14px;
+    color: #555;
+    margin: 5px 0;
+}
+
+.id-info label {
+    font-weight: bold;
+    
+}
+
+.id-info label, .id-info h2 {
+    color: #4f9e86;
+}
+
+/* Styling for input fields */
+input[type="text"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 6px;
+    margin-top: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder {
+    color: #bbb;
+}
+
+/* Styling for disabled input fields */
+input[disabled] {
+    background-color: #f0f0f0;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Responsive Design */
+@media (max-width: 450px) {
+    .id-card {
+        width: 90%;
+        grid-template-columns: 100px 1fr;
+    }
+}

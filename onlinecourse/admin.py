@@ -20,8 +20,7 @@ Functions:
 from django.contrib import admin
 
 # Import models
-from .models import Choice, Course, Enrollment, Instructor, Learner, Lesson, Question, Submission
-
+from .models import Choice, Course, Enrollment, Lesson, Question, Submission, Attempt
 
 # Admin inline classes
 class QuestionInline(admin.StackedInline):
@@ -121,8 +120,7 @@ admin.site.register(Lesson, LessonAdmin)
 admin.site.register(Question, QuestionAdmin)
 
 # Register other models
-admin.site.register(Instructor)
-admin.site.register(Learner)
 admin.site.register(Choice)
 admin.site.register(Submission)
 admin.site.register(Enrollment)
+admin.site.register(Attempt)

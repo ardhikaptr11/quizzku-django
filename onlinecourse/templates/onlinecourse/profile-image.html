@@ -1,0 +1,31 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'onlinecourse/profile-image.css' %}" />
+
+<div class="profile-image-wrapper">
+    <div class="progress-ring">
+        {% if user.gender == "Male" and not user.profile_image %}
+        <img class="profile-image" src="{% static 'media/course_images/male-default-profile.jpg' %}" />
+        {% elif user.gender == "Female" and not user.profile_image %}
+        <img class="profile-image" src="{% static 'media/course_images/female-default-profile.jpg' %}" />
+        {% else %}
+        <img class="profile-image" src="{{ user.profile_image.url }}" />
+        {% endif %}
+        <svg>
+            <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#f7c978"></stop>
+                    <stop offset="13%" stop-color="#f3a469"></stop>
+                    <stop offset="25%" stop-color="#f18271"></stop>
+                    <stop offset="38%" stop-color="#cc6b8e"></stop>
+                    <stop offset="50%" stop-color="#a86aa4"></stop>
+                    <stop offset="62%" stop-color="#8f6aae"></stop>
+                    <stop offset="75%" stop-color="#7b5fac"></stop>
+                    <stop offset="87%" stop-color="#5a55ae"></stop>
+                    <stop offset="0%" stop-color="#3f51b1"></stop>
+                </linearGradient>
+            </defs>
+            <circle class="background-ring" cx="25" cy="25" r="24"></circle>
+            <circle class="progress-ring-fill" cx="25" cy="25" r="24"></circle>
+        </svg>
+    </div>
+</div>

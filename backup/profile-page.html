@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="profile-page.css" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="error-icon" style="display: none;">{% include 'account/error-animation.html' %}</div>
+        <div id="profile-container">
+            <div id="profile-header"></div>
+            <div id="profile-content">
+                <div id="space">
+                    <div class="profile-image-wrapper">
+                        <div class="progress-ring">
+                            <svg>
+                                <defs>
+                                    <!-- Define gradient for the progress ring -->
+                                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#f7c978"></stop>
+                                        <stop offset="13%" stop-color="#f3a469"></stop>
+                                        <stop offset="25%" stop-color="#f18271"></stop>
+                                        <stop offset="38%" stop-color="#cc6b8e"></stop>
+                                        <stop offset="50%" stop-color="#a86aa4"></stop>
+                                        <stop offset="62%" stop-color="#8f6aae"></stop>
+                                        <stop offset="75%" stop-color="#7b5fac"></stop>
+                                        <stop offset="87%" stop-color="#5a55ae"></stop>
+                                        <stop offset="0%" stop-color="#3f51b1"></stop>
+                                    </linearGradient>
+                                </defs>
+                                <circle class="background-ring" cx="62.5" cy="62.5" r="60"></circle>
+                                <circle class="progress-ring-fill" cx="62.5" cy="62.5" r="60"></circle>
+                            </svg>
+                            <img class="profile-image" src="../static/media/course_images/male-default-profile.jpg" />
+                        </div>
+                    </div>
+                </div>
+                <div id="user-details">
+                    <div class="headers">
+                        <div class="user-name">
+                            <h2 id="fullname">Ardhika Putra</h2>
+                            <p id="user-name">@ardhikaptr11</p>
+                        </div>
+                        <div class="save-btn">
+                            <button>Save</button>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <div class="info">
+                            <div>
+                                <p id="title"><b>Your Photo</b></p>
+                                <p id="sub-title">Update your photo and personal details</p>
+                            </div>
+                            <div class="upload-area">
+                                <div class="upload-btn">
+                                    <label>
+                                        <ion-icon name="camera" class="camera-icon"></ion-icon>
+                                        <input
+                                            type="file"
+                                            name="input-image"
+                                            accept="image/jp, image/png, image/jpeg"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="cta-buttons">
+                                <button>Update</button>
+                                <button>Remove</button>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <p><b>Nickname</b></p>
+                            <span id="nicknameDisplay">Ardhika</span>
+                            <input type="text" id="nickname" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Gender</b></p>
+                            <span id="gender">Male</span>
+                        </div>
+                        <div class="info">
+                            <p><b>Email</b></p>
+                            <span id="emailDisplay">ardhikaptr11@gmail.com</span>
+                            <input type="email" id="email" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Phone Number</b></p>
+                            <span id="phoneDisplay">082234441918</span>
+                            <input type="tel" id="phone" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Institution</b></p>
+                            <span id="institutionDisplay">Institut Teknologi Sepuluh Nopember</span>
+                            <input type="text" id="institution" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Birth Date</b></p>
+                            <span id="birth-date">October 11th, 2000</span>
+                        </div>
+                        <div class="info">
+                            <p><b>Date Joined</b></p>
+                            <span id="date-joined">21/11/2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notificationArea"></div>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+        <script src="../static/javascript/profilePage.js"></script>
+    </body>
+</html>

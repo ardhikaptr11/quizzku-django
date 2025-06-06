@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=workspace_premium"
+        />
+        <link rel="stylesheet" href="{% static 'onlinecourse/quiz_base.css' %}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <link rel="icon" type="image/x-icon" href="{% static 'media/course_images/favicon.ico' %}" />
+        <title>{% block title %}Quizzku{% endblock %}</title>
+    </head>
+    <body>
+        {% block confirmation %} {% endblock %}
+        <div class="wrapper">
+            <header>
+                <nav class="navbar">
+                    {% block navigation_action %}
+                    <!-- Navigation action will go here -->
+                    {% endblock %}
+                    <div class="quiz-info" style="display: inline-block">
+                        <h1>{{course.name}}</h1>
+                        <h3><strong>Lesson:</strong> {{ lesson.title }}</h3>
+                    </div>
+                    <div class="additional-info">
+                        <div class="submission-info">
+                            {% block date %} {% endblock %}
+                            <p><strong>Learner</strong>: {{ user.nickname }}</p>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            {% block navbar_result %}
+            <!-- Navbar for quiz result will go here -->
+            {% endblock %}
+            <div class="quiz-container">
+                <div class="form-container">
+                    <div class="questions-container">
+                        <!-- <form class="questions" action="{% url 'onlinecourse:submit' course.slug_name %}" method="POST"> -->
+                        <div class="questions">
+                            {% block content %}
+                            <!-- Quiz content will go here -->
+                            {% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block scripts %}
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        {% endblock %}
+    </body>
+</html>

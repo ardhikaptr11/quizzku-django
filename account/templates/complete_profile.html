@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Complete Profile</title>
+        <link rel="icon" type="image/x-icon" href="{% static 'media/course_images/favicon.ico' %}" />
+        <link rel="stylesheet" href="{% static 'account/complete-profile.css' %}" />
+    </head>
+    <body>
+        <div class="overlay"></div>
+        <div class="loader">
+            <div class="loading-spinner">
+                <svg class="circular" viewBox="25 25 50 50">
+                    <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" />
+                </svg>
+            </div>
+            <p class="loading-text"></p>
+        </div>
+        <div class="wrapper">
+            <div class="form-container">
+                <div class="questionnaire">
+                    <div class="header">
+                        <h2>Complete this form before becoming part of us.</h2>
+                        <div class="progress-bar">
+                            <div class="bar one"></div>
+                            <div class="bar two"></div>
+                            <div class="bar three"></div>
+                            <div class="bar four"></div>
+                            <div class="bar five"></div>
+                            <div class="progress" id="progress"></div>
+                        </div>
+                    </div>
+                    <div class="questions-container">
+                        <div class="form-question">
+                            <div class="form-no">
+                                <h3></h3>
+                            </div>
+                            <div class="left-space"></div>
+                            <div class="greeting">
+                                <input type="hidden" value="{{ username }}" />
+                                <h1></h1>
+                            </div>
+                            <div class="sub-greeting">
+                                <p></p>
+                            </div>
+                            <form
+                                id="multiStepForm"
+                                action="{% url 'account:submit_form' %}"
+                                csrf-token="{{ csrf_token }}"
+                                method="POST"
+                            >
+                                {% csrf_token %}
+                                <div class="form-step active">
+                                    <input
+                                        type="text"
+                                        id="fullName"
+                                        name="full_name"
+                                        placeholder="Type your full name here"
+                                        autocomplete="name"
+                                        required
+                                    />
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="form-step">
+                                    <input
+                                        type="text"
+                                        id="nickName"
+                                        name="nickname"
+                                        placeholder="Type your nickname here"
+                                        autocomplete="family-name"
+                                        required
+                                    />
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="form-step">
+                                    <div class="card-container">
+                                        <label class="card">
+                                            <input type="radio" name="gender" value="Male" required />
+                                            <div class="card-content">
+                                                <ion-icon name="male-outline" class="male-icon"></ion-icon>
+                                                <span class="label">Male</span>
+                                            </div>
+                                        </label>
+
+                                        <label class="card">
+                                            <input type="radio" name="gender" value="Female" required />
+                                            <div class="card-content">
+                                                <ion-icon name="female-outline" class="female-icon"></ion-icon>
+                                                <span class="label">Female</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="form-step">
+                                    <div class="phone-input">
+                                        <span class="country-code">+62</span>
+                                        <input
+                                            type="tel"
+                                            id="phoneNumber"
+                                            name="phone_number"
+                                            maxlength="16"
+                                            placeholder="812-3456-7890"
+                                            autocomplete="tel-national"
+                                            required
+                                        />
+                                    </div>
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="form-step">
+                                    <div class="custom-dropdown">
+                                        <div class="selected" id="selectedOption" aria-required="true">
+                                            <h3>Select your field of interest</h3>
+                                            <ion-icon name="chevron-down-outline" class="icon"></ion-icon>
+                                        </div>
+                                        <div class="options" id="options">
+                                            <div class="option" data-value="IT">Information Technology (IT)</div>
+                                            <div class="option" data-value="EMP">Engineering, Math, and Physics</div>
+                                            <div class="option" data-value="LNJ">Law and Justice</div>
+                                            <div class="option" data-value="HCS">History and Cultural Studies</div>
+                                            <div class="option" data-value="SPE">Sport and Physical Education</div>
+                                            <div class="option" data-value="SIS">Social and International Studies</div>
+                                            <div class="option" data-value="HMB">
+                                                Health, Medicine, and Biological Sciences
+                                            </div>
+                                            <div class="option" data-value="ENS">
+                                                Environmental Studies and Sustainability
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="field_of_interest" id="interestInput" />
+                                    </div>
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="form-step">
+                                    <input type="date" id="birthDate" name="birth_date" autocomplete="bday" required />
+                                    <span class="warning-message"></span>
+                                </div>
+
+                                <div class="cta-button">
+                                    <div class="next">
+                                        <h3>ok</h3>
+                                        <ion-icon name="checkmark-outline" class="icon"></ion-icon>
+                                    </div>
+                                    <div class="submit">
+                                        <button type="submit">
+                                            <h3>Submit</h3>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="navigation-container">
+                        <div class="navigation-buttons">
+                            <div class="prev">
+                                <ion-icon name="chevron-up-outline" class="icon"></ion-icon>
+                            </div>
+                            <div class="next">
+                                <ion-icon name="chevron-down-outline" class="icon"></ion-icon>
+                            </div>
+                        </div>
+                        <div class="powered-by">
+                            <h4>Powered by QuizzForm</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/static/javascript/completeProfile.js"></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    </body>
+</html>

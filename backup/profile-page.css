@@ -1,0 +1,320 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    place-items: center;
+    font-family: "Roboto", sans-serif;
+    background-color: #f5f5f5;
+    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
+}
+
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px transparent inset;
+}
+
+#notificationArea {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+#notification-box {
+    background-color: #e6e9f0;
+    width: 250px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.notification-content {
+    display: flex;
+}
+
+.message {
+    display: flex;
+    align-items: center;
+}
+
+.message p {
+    padding-right: 10px;
+    margin-left: -10px;
+    margin-top: -8px;
+}
+
+.timer {
+    width: 100%;
+    height: 4px;
+    background-color: #4f9e86;
+    border-radius: 4px;
+    margin-top: -8px;
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.timer-animation {
+    animation: countdown 5s linear forwards;
+}
+
+@keyframes open {
+    from {
+        top: -25px;
+        opacity: 0;
+        transform: scale(0.5);
+        visibility: hidden;
+    }
+    to {
+        top: 5px;
+        opacity: 1;
+        transform: scale(1);
+        visibility: visible;
+    }
+}
+
+@keyframes close {
+    from {
+        top: 5px;
+        opacity: 1;
+        transform: scale(1);
+        visibility: visible;
+    }
+    to {
+        top: -25px;
+        opacity: 0;
+        transform: scale(0.5);
+        visibility: hidden;
+    }
+}
+
+@keyframes countdown {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+#profile-container {
+    width: 70%;
+    height: fit-content;
+    margin: 50px 0;
+    background-color: aliceblue;
+    border-top-left-radius: 50px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+#profile-header {
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(-20deg, #8ddad5 0%, #00cdac 100%);
+    margin-bottom: 30px;
+}
+
+.profile-image {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    border-radius: 50%;
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#user-name {
+    color: #636363;
+}
+
+#profile-content {
+    display: grid;
+    grid-template-columns: 20% auto;
+    grid-template-areas: "left-space user-details";
+}
+
+.user-info p {
+    font-size: 15px;
+    margin-bottom: 75px;
+    line-height: 2em;
+}
+
+.profile-image-wrapper {
+    width: 125px;
+    height: 125px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    /* border-radius: 50%;
+    border: 4px solid #fdf6f7; */
+    /* overflow: hidden; */
+    box-shadow: rgba(0, 0, 0, 0.15) 2.4px 2.4px 3.2px;
+    margin: auto;
+    margin-top: -30%;
+}
+
+#user-details {
+    width: 100%;
+}
+
+.headers {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 100px;
+}
+
+#fullname {
+    margin-bottom: 10px;
+}
+
+.save-btn button {
+    outline: none;
+    border: none;
+    background-color: #1e3458;
+    height: 30px;
+    width: 70px;
+    padding: 4px 8px;
+    color: #fdf6f7;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.save-btn button,
+.cta-buttons button:last-child,
+.edit-icon {
+    margin-right: 50px;
+}
+
+.cta-buttons button:first-child {
+    margin-right: 10px;
+}
+
+.save-btn button,
+.cta-buttons button,
+.edit-icon,
+.upload-btn,
+.upload-btn > label {
+    cursor: pointer;
+}
+
+.edit-icon {
+    font-size: 20px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 10px;
+}
+
+.info {
+    display: grid;
+    grid-template-columns: 150px 4fr auto;
+}
+
+.info span {
+    line-height: 2em;
+    color: #708090;
+}
+
+.edit-input {
+    height: 30px;
+    border: 1px solid #b4b4b4;
+    background-color: transparent;
+    border-radius: 6px;
+    padding: 5px;
+    font-size: 15px;
+    color: #708090;
+}
+
+.edit-input:focus {
+    outline: none;
+    border: 2px solid #29b6f6;
+}
+
+.valid {
+    border: 2px solid #25c78c;
+}
+
+.invalid {
+    border: 2px solid #ff003d;
+}
+
+#title {
+    margin-bottom: 0;
+}
+
+#sub-title {
+    color: #636363;
+    margin-top: 20px;
+    line-height: normal;
+}
+
+.upload-btn {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #1e3458;
+    border-radius: 50%;
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.camera-icon {
+    font-size: 25px;
+    color: #e8e2e3;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.cta-buttons button {
+    outline: none;
+    border: none;
+    background: none;
+    padding: 4px 8px;
+    width: 70px;
+    height: 30px;
+    font-weight: 600;
+    color: #708090;
+    font-size: 15px;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+}
+
+.progress-ring {
+    position: relative;
+    /* margin: 0 auto; */
+    /* top: 0;
+    left: 0; */
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg); /* Rotate to start at the top */
+}
+
+.progress-ring circle {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+.background-ring {
+    stroke: #e0e0e0;
+}
+
+.progress-ring-fill {
+    stroke: url(#gradient); /* Use the gradient defined in SVG defs */
+    transition: stroke-dashoffset 1s ease;
+}

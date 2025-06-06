@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="{% static 'account/profile-page.css' %}" />
+        <link rel="stylesheet" href="{% static 'account/ellipsis-loader.css' %}" />
+        <link rel="stylesheet" href="{% static 'account/icons.css' %}" />
+        <link rel="shortcut icon" href="{% static 'media/course_images/favicon.ico' %}" type="image/x-icon" />
+        <title>Profile</title>
+    </head>
+    <body>
+        <div class="error-icon">
+            <div class="animated-icon animated-icon--error animate font-normal">
+                <span class="line left"></span><span class="line right"></span>
+                <div class="circle-border"></div>
+                <div class="fix left"></div>
+                <div class="fix right"></div>
+            </div>
+        </div>
+        <div class="success-icon">
+            <div class="animated-icon animated-icon--success animate font-normal">
+                <span class="line tip"></span><span class="line long"></span>
+                <div class="circle-border"></div>
+                <div class="fix"></div>
+            </div>
+        </div>
+        {% include 'onlinecourse/navbar.html' %}
+        <div id="profile-container">
+            <div
+                id="profile-header"
+                data-progress="{{ completion_percentage }}"
+                data-url="{% url 'account:update_profile' %}"
+                csrf-token="{{ csrf_token }}"
+            ></div>
+            <div id="profile-content">
+                <div id="space">{% include 'profile-image.html' %}</div>
+                <div id="user-details">
+                    <div class="headers">
+                        <div class="user-name">
+                            <h2 id="fullname">{{ user.full_name }}</h2>
+                            <p id="user-name">@{{ user.username }}</p>
+                        </div>
+                        <div class="save-btn">
+                            <button class="disabled">Save</button>
+                        </div>
+                    </div>
+                    <div class="user-info">
+                        <div class="info">
+                            <div>
+                                <p id="title"><b>Your Photo</b></p>
+                                <p id="sub-title">Update your photo and personal details</p>
+                            </div>
+                            <div class="upload-area">
+                                <div class="upload-btn">
+                                    <label>
+                                        <ion-icon name="camera" class="camera-icon"></ion-icon>
+                                        <input
+                                            type="file"
+                                            id="input-image"
+                                            name="input-image"
+                                            accept="image/jp, image/png, image/jpeg"
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="cta-buttons">
+                                <button>Update</button>
+                                <button>Remove</button>
+                            </div>
+                        </div>
+                        <div class="info">
+                            <p><b>Nickname</b></p>
+                            <span id="nicknameDisplay">{{ user.nickname }}</span>
+                            <input type="text" id="nickname" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Gender</b></p>
+                            {% if user.gender == 'Male' %}
+                            <div class="gender-options">
+                                <button class="gender-button active">Male</button>
+                                <button class="gender-button">Female</button>
+                            </div>
+                            {% else %}
+                            <div class="gender-options">
+                                <button class="gender-button active">Female</button>
+                                <button class="gender-button">Male</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="info">
+                            <p><b>Email</b></p>
+                            <span id="emailDisplay">{{ user.email }}</span>
+                            <input type="email" id="email" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Address</b></p>
+                            <span id="addressDisplay">{{ user.address }}</span>
+                            <input type="text" id="address" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Phone Number</b></p>
+                            <span id="phoneDisplay">{{ user.phone_number }}</span>
+                            <input type="tel" id="phone" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Profession</b></p>
+                            <span id="professionDisplay">{{ learner_data.profession }}</span>
+                            <input type="text" id="profession" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Interest</b></p>
+                            <span id="interest">{{ learner_data.field_of_interest }}</span>
+                        </div>
+                        <div class="info">
+                            <p>
+                                <b>School / University /<br />Company</b>
+                            </p>
+                            <span id="institutionDisplay">{{ user.institution }}</span>
+                            <input type="text" id="institution" class="edit-input" style="display: none" />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                        <div class="info">
+                            <p><b>Birth Date</b></p>
+                            <span id="birth-date">{{ user.birth_date }}</span>
+                        </div>
+                        <div class="info">
+                            <p><b>Date Joined</b></p>
+                            <span id="date-joined">{{user.date_joined}}</span>
+                        </div>
+                        <div class="info">
+                            <p><b>Social Link</b></p>
+                            {% if not learner_data.social_link %}
+                            <span id="socialDisplay">{{ learner_data.social_link }}</span>
+                            {% else %}
+                            <div class="social-wrapper">
+                                {% if "instagram.com" in learner_data.social_link %}
+                                <ion-icon name="logo-instagram" class="social-icon"></ion-icon>
+                                {% elif "linkedin.com" in learner_data.social_link %}
+                                <ion-icon name="logo-linkedin" class="social-icon"></ion-icon>
+                                {% elif "facebook.com" in learner_data.social_link %}
+                                <ion-icon name="logo-facebook" class="social-icon"></ion-icon>
+                                {% elif "x.com" in learner_data.social_link %}
+                                <ion-icon name="logo-twitter" class="social-icon"></ion-icon>
+                                {% elif "github.com" in learner_data.social_link %}
+                                <ion-icon name="logo-github" class="social-icon"></ion-icon>
+                                {% endif %}
+                                <a id="socialLink" data-link="{{ learner_data.social_link }}"
+                                    >{{ learner_data.social_profile_name }}</a
+                                >
+                            </div>
+                            {% endif %}
+                            <input
+                                type="text"
+                                id="social"
+                                class="edit-input"
+                                placeholder="Social platform (e.g. Instagram, LinkedIn, Facebook, X, or GitHub)"
+                                style="display: none"
+                            />
+                            <ion-icon name="pencil-outline" class="edit-icon"></ion-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="notificationArea"></div>
+        <div class="loader-container">
+            <div class="loader--ellipsis">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <p id="loader-text">Updating</p>
+        </div>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+        <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+        <script src="{% static 'javascript/profilePage.js' %}"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"
+        ></script>
+    </body>
+</html>

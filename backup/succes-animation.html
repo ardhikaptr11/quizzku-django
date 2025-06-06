@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                background-color: #eee;
+            }
+
+            html {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            *,
+            *::before,
+            *::after,
+            *:before,
+            *:after {
+                -webkit-box-sizing: inherit;
+                -moz-box-sizing: inherit;
+                box-sizing: inherit;
+            }
+
+            .font-normal {
+                font-size: 80px;
+            }
+
+            .animated-icon {
+                width: 1em;
+                height: 1em;
+                border: 0.1em solid transparent;
+                border-radius: 50%;
+                padding: 0;
+                position: relative;
+                cursor: default;
+                user-select: none;
+                transform: scale(0.375);
+            }
+
+            .animated-icon--success {
+                border-color: rgb(54, 178, 116);
+            }
+
+            .animated-icon--success::before,
+            .animated-icon--success::after {
+                content: "";
+                border-radius: 50%;
+                position: absolute;
+                width: 0.7em;
+                height: 1em;
+                background: #eee;
+                transform: rotate(45deg);
+            }
+
+            .animated-icon--success::before {
+                border-radius: 1em 0 0 1em;
+                width: 0.5em;
+                top: 0.2125em;
+                left: -0.15em;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon--success::after {
+                border-radius: 0 1em 1em 0;
+                top: 0.03em;
+                left: 0.265em;
+                transform: rotate(-45deg);
+                transform-origin: 0 0.5em;
+            }
+
+            .animated-icon--success > .placeholder {
+                width: 1em;
+                height: 1em;
+                border: 0.1em solid rgba(54, 178, 116, 0.4);
+                border-radius: 50%;
+                position: absolute;
+                left: -0.1em;
+                top: -0.1em;
+                z-index: 2;
+            }
+
+            .animated-icon--success > .fix {
+                width: 0.1em;
+                height: 1em;
+                background-color: #eee;
+                position: absolute;
+                left: 0.175em;
+                top: 0.05em;
+                z-index: 1;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon > .line {
+                height: 0.1em;
+                background-color: #36b274;
+                display: block;
+                border-radius: 0.025em;
+                position: absolute;
+                z-index: 2;
+            }
+
+            .animated-icon > .line.tip {
+                width: 0.3125em;
+                left: 0.05em;
+                top: 0.475em;
+                transform: rotate(45deg);
+                background-color: #36b274;
+            }
+
+            .animated-icon > .line.long {
+                width: 0.5875em;
+                right: 0.05em;
+                top: 0.375em;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon.animate::after {
+                animation: rotate-placeholder 5s ease-in;
+            }
+
+            .animated-icon.animate > .tip {
+                animation: animate-success-tip 5s;
+            }
+
+            .animated-icon.animate > .long {
+                animation: animate-success-long 5s;
+            }
+
+            /*  width: 0.3125em;
+                left: 0.05em;
+                top: 0.475em; */
+            
+            @keyframes animate-success-tip {
+                0% {
+                    width: 0;
+                    left: 0.0125em;
+                    top: 0.1375em;
+                }
+
+                54% {
+                    width: 0;
+                    left: 0.0125em;
+                    top: 0.1375em;
+                }
+
+                70% {
+                    width: 0.475em;
+                    left: -0.1em;
+                    top: 0.4em;
+                }
+
+                84% {
+                    width: 0.2375em;
+                    left: 0.12em;
+                    top: 0.5em;
+                }
+
+                100% {
+                    width: 0.3125em;
+                    left: 0.05em;
+                    top: 0.475em;
+                }
+            }
+
+            /* width: 0.5875em;
+            right: 0.05em;
+            top: 0.375em; */
+            @keyframes animate-success-long {
+                0% {
+                    width: 0;
+                    right: 0.55em;
+                    top: 0.575em;
+                }
+
+                65% {
+                    width: 0;
+                    right: 0.55em;
+                    top: 0.575em;
+                }
+
+                84% {
+                    width: 0.65em;
+                    right: 0;
+                    top: 0.35em;
+                }
+
+                100% {
+                    width: 0.5875em;
+                    right: 0.05em;
+                    top: 0.375em;
+                }
+            }
+
+            @keyframes rotate-placeholder {
+                0% {
+                    transform: rotate(-45deg);
+                }
+
+                5% {
+                    transform: rotate(-45deg);
+                }
+
+                12% {
+                    transform: rotate(-405deg);
+                }
+
+                100% {
+                    transform: rotate(-405deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="animated-icon animated-icon--success animate font-normal">
+            <span class="line tip"></span><span class="line long"></span>
+            <div class="placeholder"></div>
+            <div class="fix"></div>
+        </div>
+    </body>
+</html>

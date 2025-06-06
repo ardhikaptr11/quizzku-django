@@ -15,7 +15,12 @@ Models:
 
 import sys
 
+# from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+
+from account.models import Instructor, User
+
+# User = get_user_model()
 
 # Errror handling if Django module is missing or not installed
 try:
@@ -24,72 +29,68 @@ except Exception:
     print("There was an error loading django modules. Do you have django installed?")
     sys.exit()
 
-from django.conf import settings
+    # Define the models for the online course application
 
-# Define the models for the online course application
+    # Instructor model
+    # class Instructor(models.Model):
+    #     """
+    #     A model representing an instructor in the online course application.
 
+    #     The Instructor model includes the following fields:
 
-# Instructor model
-class Instructor(models.Model):
-    """
-    A model representing an instructor in the online course application.
+    #         user (ForeignKey): A reference to the user associated with the instructor.
+    #         full_time (BooleanField): A boolean indicating whether the instructor is full-time. Defaults to True.
+    #         total_learners (IntegerField): An integer representing the total number of learners taught by the instructor.
 
-    The Instructor model includes the following fields:
+    #     Methods:
 
-        user (ForeignKey): A reference to the user associated with the instructor.
-        full_time (BooleanField): A boolean indicating whether the instructor is full-time. Defaults to True.
-        total_learners (IntegerField): An integer representing the total number of learners taught by the instructor.
+    #         __str__: Returns the username of the associated user as the string representation of the Instructor instance.
+    #     """
 
-    Methods:
+    #     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="instructors")  # Act as a foreign key
+    #     full_time = models.BooleanField(default=True)
+    #     total_learners = models.IntegerField()
 
-        __str__: Returns the username of the associated user as the string representation of the Instructor instance.
-    """
+    #     def __str__(self):
+    #         return self.user.username
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Act as a foreign key
-    full_time = models.BooleanField(default=True)
-    total_learners = models.IntegerField()
+    # # Learner model
+    # class Learner(models.Model):
+    # """
+    # A model representing a learner in the online course application.
 
-    def __str__(self):
-        return self.user.username
-
-
-# Learner model
-class Learner(models.Model):
-    """
-    A model representing a learner in the online course application.
-
-    Attributes:
-        STUDENT (str): Constant for student occupation.
-        DEVELOPER (str): Constant for developer occupation.
-        DATA_SCIENTIST (str): Constant for data scientist occupation.
-        DATABASE_ADMIN (str): Constant for database admin occupation.
-        OCCUPATION_CHOICES (list): List of tuples containing occupation choices.
-        user (ForeignKey): A reference to the user associated with the learner.
-        occupation (CharField): The occupation of the learner, with choices defined in OCCUPATION_CHOICES.
-        social_link (URLField) : A URL to the learner's social profile.
-    """
+    # Attributes:
+    #     STUDENT (str): Constant for student occupation.
+    #     DEVELOPER (str): Constant for developer occupation.
+    #     DATA_SCIENTIST (str): Constant for data scientist occupation.
+    #     DATABASE_ADMIN (str): Constant for database admin occupation.
+    #     OCCUPATION_CHOICES (list): List of tuples containing occupation choices.
+    #     user (ForeignKey): A reference to the user associated with the learner.
+    #     occupation (CharField): The occupation of the learner, with choices defined in OCCUPATION_CHOICES.
+    #     social_link (URLField) : A URL to the learner's social profile.
+    # """
 
     # Assign occupation
-    STUDENT = "student"
-    DEVELOPER = "developer"
-    DATA_SCIENTIST = "data_scientist"
-    DATABASE_ADMIN = "dba"
+    # STUDENT = "student"
+    # DEVELOPER = "developer"
+    # DATA_SCIENTIST = "data_scientist"
+    # DATABASE_ADMIN = "dba"
 
-    # Define occupation choices
-    OCCUPATION_CHOICES = [
-        (STUDENT, "Student"),
-        (DEVELOPER, "Developer"),
-        (DATA_SCIENTIST, "Data Scientist"),
-        (DATABASE_ADMIN, "Database Admin"),
-    ]
+    # # Define occupation choices
+    # OCCUPATION_CHOICES = [
+    #     (STUDENT, "Student"),
+    #     (DEVELOPER, "Developer"),
+    #     (DATA_SCIENTIST, "Data Scientist"),
+    #     (DATABASE_ADMIN, "Database Admin"),
+    # ]
 
-    # Define model fields
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Act as a foreign key
-    occupation = models.CharField(null=False, max_length=20, choices=OCCUPATION_CHOICES, default=STUDENT)
-    social_link = models.URLField(max_length=200)
+    # # Define model fields
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="learners")  # Act as a foreign key
+    # occupation = models.CharField(null=False, max_length=20, choices=OCCUPATION_CHOICES, default=STUDENT)
+    # social_link = models.URLField(max_length=200)
 
-    def __str__(self):
-        return self.user.username + "," + self.occupation
+    # def __str__(self):
+    #     return f"{self.user.username}, {self.occupation}"
 
 
 # Course model
@@ -112,6 +113,7 @@ class Course(models.Model):
 
     # Define model fields
     name = models.CharField(null=False, max_length=30, default="online course")
+    slug_name = models.SlugField(unique=True)
     image = models.ImageField(upload_to="course_images/")
     description = models.CharField(max_length=1000)
     pub_date = models.DateField(null=True)
@@ -121,28 +123,32 @@ class Course(models.Model):
     instructors = models.ManyToManyField(Instructor)
     # Model has a many-to-many relationship with User through Enrollment
     # In other words, it's not a direct relationship
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through="Enrollment")
+    users = models.ManyToManyField(User, through="Enrollment", through_fields=("course", "learner"))
 
     def __str__(self):
-        return "Name: " + self.name + "," + "Description: " + self.description
+        return f"Name: {self.name}, Description: {self.description}"
 
 
 # Lesson model
 class Lesson(models.Model):
     """
-    Represents a lesson in the online course application.
+    Represents a lesson in an online course.
 
     Attributes:
-        title (CharField): The title of the lesson with a maximum length of 200 characters. Defaults to "title".
-        order (IntegerField): The order of the lesson within the course. Defaults to 0.
-        course (ForeignKey): A foreign key relationship to the Course model. Deletes the lesson if the course is deleted.
+        course (ForeignKey): A reference to the Course this lesson belongs to.
+        order (IntegerField): The order of the lesson within the course.
+        title (CharField): The title of the lesson.
         content (TextField): The content of the lesson.
+        total_attempt (IntegerField): The total number of attempts allowed for this lesson, not editable by users.
     """
 
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")  # Act as a foreign key
     title = models.CharField(null=False, max_length=200, default="title")
-    order = models.IntegerField(default=0)
     content = models.TextField()
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)  # Act as a foreign key
+    total_attempt = models.IntegerField(default=3, editable=False)
+
+    def __str__(self):
+        return f"{self.title}"
 
 
 # Enrollment model
@@ -169,12 +175,48 @@ class Enrollment(models.Model):
     COURSE_MODES = [(AUDIT, "Audit"), (HONOR, "Honor"), (BETA, "BETA")]
 
     # Act as a foreign key
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    learner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="enrollments")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="enrollments")
 
     date_enrolled = models.DateField(default=now)
     mode = models.CharField(max_length=5, choices=COURSE_MODES, default=AUDIT)
     rating = models.FloatField(default=5.0)
+
+
+class Attempt(models.Model):
+    """
+    Represents an attempt made by a learner on a lesson.
+    Attributes:
+        learner (ForeignKey): A reference to the User who made the attempt.
+        lesson (ForeignKey): A reference to the Lesson being attempted.
+    Methods:
+        `decrease_attempt()`: Decreases the remaining attempts by 1 if there are attempts left and saves the instance.
+        `has_attempts_left()`: Checks if there are any remaining attempts.
+        `__str__()`: Returns a string representation of the attempt, including the username and lesson title.
+    """
+
+    # Act as foreign key
+    learner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="attempts")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="attempts")
+    attempt_no = models.IntegerField(default=0, editable=False)
+    remaining_attempts = models.IntegerField(null=True, editable=False)
+
+    class Meta:
+        unique_together = ["learner", "lesson", "attempt_no"]
+
+    def decrease_attempt(self):
+        if self.remaining_attempts > 0:
+            self.remaining_attempts -= 1
+            self.save()
+
+    @classmethod
+    def create_attempt(cls, learner, lesson, attempt_no, remaining_attempts=3):
+        return cls.objects.create(
+            learner=learner, lesson=lesson, attempt_no=attempt_no, remaining_attempts=remaining_attempts
+        )
+
+    def __str__(self):
+        return f"{self.learner.username}'s attempt for {self.lesson.title}"
 
 
 class Question(models.Model):
@@ -182,14 +224,18 @@ class Question(models.Model):
     Represents a question within a course in the online course application.
 
     Attributes:
-        course (ForeignKey): The course to which the question belongs.
         lesson (ForeignKey): The lesson to which the question belongs.
         question_text (CharField): The text of the question, limited to 200 characters.
-        grade (IntegerField): The grade assigned to the question, default is 50.
-
-    `Methods`:
-        is_get_score(selected_ids): Determines if the selected choices are correct.
+        grade (IntegerField): The grade assigned to the question, default is 100.
+        expect_multiple_answer (BooleanField): Indicates if the question expects multiple answers.
+    Methods:
+        `is_get_score(selected_ids)`: Determines if the selected choices are correct.
     """
+
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="questions")
+    question_text = models.CharField(max_length=200)  # Content of the question
+    grade = models.IntegerField(default=100, editable=False)
+    expect_multiple_answer = models.BooleanField(default=False)
 
     def is_get_score(self, selected_ids) -> bool:
         """
@@ -202,18 +248,13 @@ class Question(models.Model):
             bool: True if all selected choices are correct, False otherwise.
         """
 
-        all_answers = self.choice_set.filter(is_correct=True).count()
-        selected_correct = self.choice_set.filter(is_correct=True, id__in=selected_ids).count()
+        all_answers = self.choices.filter(is_correct=True).count()
+        selected_correct = self.choices.filter(is_correct=True, id__in=selected_ids).count()
 
         if all_answers == selected_correct:
             return True
         else:
             return False
-
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
-    question_text = models.CharField(max_length=200)  # Content of the question
-    grade = models.IntegerField(default=100)
-    expect_multiple_answer = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Question: {self.question_text}"
@@ -230,21 +271,24 @@ class Choice(models.Model):
         is_correct (BooleanField): Indicates whether this choice is the correct answer to the question. Defaults to False.
     """
 
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="choices")
     choice_text = models.TextField(max_length=200)
     is_correct = models.BooleanField(default=False)
 
 
 class Submission(models.Model):
     """
-    Represents a submission made by a student for a particular lesson in the online course.
+    Represents a submission made by a user for a specific lesson attempt.
+
     Attributes:
-        lesson (ForeignKey): A reference to the Lesson model, indicating the lesson for which
-                                this submission is made.
-        choices (ManyToManyField): A many-to-many relationship with the Choice model, representing
-                                    the choices selected by the student in this submission.
+        attempt (ForeignKey): A reference to the Attempt model, indicating which attempt this submission belongs to.
+        lesson (ForeignKey): A reference to the Lesson model, indicating which lesson this submission is for.
+        choices (ManyToManyField): A many-to-many relationship with the Choice model, representing the choices made in this submission.
+        submission_date (DateTimeField): The date and time when the submission was created, automatically set to the current date and time.
     """
 
-    # enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    attempt = models.ForeignKey(Attempt, on_delete=models.CASCADE, related_name="submissions")
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name="submissions")
     choices = models.ManyToManyField(Choice)
+    submission_date = models.DateTimeField(auto_now_add=True)
+    grade = models.IntegerField(null=True, editable=False)

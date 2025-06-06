@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Gradient Border Profile Image</title>
+        <style>
+            /* General Reset */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #f3f4f6;
+            }
+
+            /* Profile Image with Gradient Border */
+            .profile-ring-container {
+                width: 160px;
+                height: 160px;
+                background-image: linear-gradient(
+                    to bottom,
+                    #3f51b1 0%,
+                    #5a55ae 13%,
+                    #7b5fac 25%,
+                    #8f6aae 38%,
+                    #a86aa4 50%,
+                    #cc6b8e 62%,
+                    #f18271 75%,
+                    #f3a469 87%,
+                    #f7c978 100%
+                );
+                border-radius: 50%; /* Circular shape */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .profile-image-container {
+                width: 150px;
+                height: 150px;
+                background: #fff; /* White inner background */
+                border-radius: 50%; /* Circular shape */
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .profile-image {
+                width: 140px;
+                height: 140px;
+                border-radius: 50%; /* Circular profile image */
+                object-fit: cover; /* Ensure the image fits inside */
+            }
+        </style>
+    </head>
+    <body>
+        <div class="profile-ring-container">
+            <div class="profile-image-container">
+                <img src="https://via.placeholder.com/150" alt="Profile" class="profile-image" />
+            </div>
+        </div>
+    </body>
+</html>

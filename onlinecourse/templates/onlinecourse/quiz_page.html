@@ -1,0 +1,289 @@
+{% extends 'onlinecourse/quiz_base_template.html' %} {% load static %} {% load custom_tag %}
+<!-- Tab title -->
+{% block title %}Quizzku: Questions{% endblock %}
+<!-- Popup submission confirmation -->
+{% block confirmation %}
+<div class="overlay-confirmation">
+    <div class="popup-confirmation">
+        <div class="confirmation-header">
+            <h1 class="title"></h1>
+            <div>
+                <ion-icon name="alert-circle-outline" class="alert-icon"></ion-icon>
+                <span class="alert-text"></span>
+            </div>
+        </div>
+        <div class="loading-container hidden">
+            <div class="spinner"></div>
+            <span>Submitting...</span>
+        </div>
+        <div class="confirmation-buttons" csrf-token="{{ csrf_token }}" data-lesson-title="{{ lesson.title }}">
+            <!-- <input type="hidden" name="question_order" value="{{ question_order|join:',' }}">
+            <input type="hidden" name="choice_order" value="{{ choice_order|join:',' }}"> -->
+            <button class="confirm-btn active">
+                <span>Submit</span>
+            </button>
+            <button class="cancel-btn active">
+                <span>Cancel</span>
+            </button>
+        </div>
+    </div>
+    <div class="submission-success">
+        <img class="looping-gif" src="{% static 'media/course_images/submission-confirmed.gif' %}" alt="" />
+        <div class="submission-message">
+            <h1>Submission confirmed!</h1>
+        </div>
+        <div class="confirmation-buttons">
+            <button class="result-btn active">
+                <span>Show grade!</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock%} {% block navigation_action %}
+<div class="icon">
+    <a href="{% url 'onlinecourse:course_details' course.slug_name %}">
+        <ion-icon name="arrow-back-outline" class="back-icon"></ion-icon>
+    </a>
+</div>
+{% endblock %} {% block date %}
+<p><strong>Date</strong>: {% now "Y-m-d" %}</p>
+{% endblock %}
+<!-- Quiz content -->
+{% block content %} {% for data in quiz_data %}
+<div class="question" role="group" data-id="{{ data.question.id }}">
+    <div class="header-wrapper">
+        <div class="question-header">
+            <div class="question-number">
+                <h3>{{ forloop.counter }}.</h3>
+            </div>
+            <div class="question-text">
+                <p>{{data.question.question_text}}</p>
+            </div>
+        </div>
+    </div>
+    <div class="question-choice">
+        <div class="left-space"></div>
+        <div class="choices" role="group">
+            {% for choice in data.choices %}
+            <div class="choice-wrapper">
+                <div class="choice">
+                    <label class="choice-option">
+                        {% if not data.question.expect_multiple_answer %}
+                        <input type="radio" name="choice_{{ data.question.id }}" value="{{ choice.id }}" />
+                        <span class="radio-btn"></span>
+                        {% else %}
+                        <input type="checkbox" name="choice__{{ choice.id }}" value="{{ choice.id }}" />
+                        <span class="checkbox-btn"></span>
+                        {% endif %} {% if is_binary_question|get_item:data.question.id == False %}
+                        <span class="alphabet">{{ forloop.counter|to_alphabet }} </span>
+                        <span class="choice-text"> {{ choice.choice_text }}</span>
+                        {% else %}
+                        <span class="choice-text binary"> {{ choice.choice_text }}</span>
+                        {% endif %}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="question-point">
+        <span class="point-value">
+            <span class="material-symbols-outlined"> workspace_premium </span>
+            + 1
+        </span>
+    </div>
+</div>
+{% endfor %}
+<div style="margin-top: 32px"></div>
+<div style="margin-top: 32px">
+    <div class="submission-action">
+        <div class="agreement-wrapper">
+            <div class="submission-agreement">
+                <div class="agreement-container">
+                    <div class="agreement-policy">
+                        <label class="agreement-items">
+                            <input type="checkbox" required-type="checkbox" />
+                            <span class="checkbox-btn"></span>
+                            <div class="policy-text">
+                                <span style="display: inline-block">
+                                    I hereby confirm that I have completed this quiz independently and agree to submit
+                                    my answers for grading. Any violation of the academic integrity policy will result
+                                    in a failing grade for this quiz.
+                                </span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="submission-btn">
+            <button type="submit" class="confirm-btn disabled" disabled>
+                <span>Submit</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- Block script -->
+{% block scripts %} {{ block.super }}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const agreementCheckbox = document.querySelector(".agreement-items input[type='checkbox']");
+        const submitBtn = document.querySelector(".submission-btn button");
+        const popupConfirmation = document.querySelector(".popup-confirmation");
+        const overlayConfirmation = document.querySelector(".overlay-confirmation");
+        const cancelSubmissionBtn = document.querySelector(".cancel-btn");
+        const confirmSubmissionBtn = document.querySelector(".confirm-btn");
+        const confirmationBtnContainer = document.querySelector(".confirmation-buttons");
+        const choiceInputs = document.querySelectorAll("input:not([required-type]):not([type='hidden'])");
+        const questions = document.querySelectorAll(".question");
+        const alertText = document.querySelector(".confirmation-header div > .alert-text");
+        const loadingContainer = document.querySelector(".loading-container");
+        const submissionResultBtn = document.querySelector(".result-btn");
+        const gif = document.querySelector(".looping-gif");
+
+        choiceInputs.forEach((input) => {
+            input.addEventListener("change", function () {
+                const choices = input.closest(".choices");
+                if (choices.classList.contains("unanswered")) {
+                    choices.classList.remove("unanswered");
+                }
+            });
+        });
+
+        submitBtn.addEventListener("click", function () {
+            document.body.style.overflow = "hidden";
+            overlayConfirmation.style.display = "flex";
+            overlayConfirmation.style.justifyContent = "center";
+            overlayConfirmation.style.alignItems = "center";
+            popupConfirmation.classList.add("show");
+
+            const unansweredQuestions = Array.from(questions).filter((question) => {
+                const choiceInputs = question.querySelectorAll("input:not([required-type]):not([type='hidden'])");
+                const isAnswered = Array.from(choiceInputs).some((input) => input.checked);
+                const choices = question.querySelectorAll(".choices");
+
+                choices.forEach((choice) => {
+                    choice.classList.toggle("unanswered", !isAnswered);
+                });
+
+                return !isAnswered;
+            });
+
+            const confirmationTitle = document.querySelector(".confirmation-header .title");
+            const hasUnansweredQuestion = unansweredQuestions.length > 0;
+
+            confirmationTitle.textContent = hasUnansweredQuestion ? "Missing answers" : "Finish and submit?";
+            confirmationTitle.nextElementSibling.style.display = hasUnansweredQuestion ? "flex" : "none";
+            alertText.textContent = hasUnansweredQuestion
+                ? "It seems like you have unanswered questions. Do you still want to continue submitting?"
+                : "";
+        });
+
+        cancelSubmissionBtn.addEventListener("click", function () {
+            document.body.style.overflow = "auto";
+            overlayConfirmation.style.display = "none";
+            popupConfirmation.classList.remove("show");
+            loadingContainer.classList.add("hidden");
+        });
+
+        confirmSubmissionBtn.addEventListener("click", function () {
+            loadingContainer.classList.remove("hidden");
+            confirmationBtnContainer.style.display = "none";
+
+            const choices = {};
+            questions.forEach((question) => {
+                const choiceInputs = question.querySelectorAll("input:not([required-type]):not([type='hidden'])");
+                const questionId = question.dataset.id;
+                const selectedChoices = Array.from(choiceInputs)
+                    .filter((input) => input.checked)
+                    .map((input) => input.value);
+                choices[questionId] = selectedChoices;
+            });
+
+            const csrfToken = confirmationBtnContainer.getAttribute("csrf-token");
+            const lessonTitle = confirmationBtnContainer.getAttribute("data-lesson-title");
+            const payload = {
+                choices: choices,
+                lessonTitle: lessonTitle,
+            };
+
+            const submitUrl = "{% url 'onlinecourse:submit' course.slug_name %}";
+            fetch(submitUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken,
+                },
+                body: JSON.stringify(payload),
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Network problem occurred");
+                    }
+                })
+                .then((data) => {
+                    const resultUrl = data.quiz_result_url;
+                    if (data.success) {
+                        const submissionSuccess = document.querySelector(".submission-success");
+
+                        if (gif) {
+                            const refreshGif = () => {
+                                gif.src = gif.src.split("?")[0] + "?" + new Date().getTime();
+                            };
+                            refreshGif();
+                            const intervalId = setInterval(refreshGif, 3000);
+                            setTimeout(() => {
+                                clearInterval(intervalId);
+                            }, 15000);
+                        }
+
+                        setTimeout(() => {
+                            loadingContainer.classList.add("hidden");
+                            popupConfirmation.classList.remove("show");
+                            submissionSuccess.style.display = "flex";
+                        }, 3000);
+                    } else {
+                        console.error("Error submitting quiz:", data);
+                    }
+
+                    submissionResultBtn.addEventListener("click", () => {
+                        window.location.href = resultUrl;
+                        setTimeout(() => {
+                            clearInterval(intervalId);
+                        });
+                    });
+                })
+                .catch((error) => {
+                    loadingContainer.classList.add("hidden");
+                    console.error("Error:", error);
+                });
+        });
+
+        window.addEventListener("pageshow", () => {
+            if (agreementCheckbox) {
+                agreementCheckbox.checked = false;
+                sessionStorage.setItem("checkboxChecked", false);
+                submitBtn.disabled = true;
+                submitBtn.classList.remove("active");
+                submitBtn.classList.add("disabled");
+
+                agreementCheckbox.addEventListener("change", function () {
+                    if (this.checked) {
+                        sessionStorage.setItem("checkboxChecked", true);
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove("disabled");
+                        submitBtn.classList.add("active"); // Enable the button when checked
+                    } else {
+                        submitBtn.classList.remove("active");
+                        submitBtn.classList.add("disabled");
+                        submitBtn.disabled = true; // Disable the button when unchecked
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
