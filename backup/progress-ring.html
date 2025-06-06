@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Profile Completion Indicator</title>
+        <link rel="stylesheet" href="style.css" />
+        <style>
+            /* General styling for the profile card */
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f4f4f9;
+            }
+
+            .profile-card {
+                width: 350px;
+                padding: 20px;
+                border-radius: 12px;
+                background-color: #ffffff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                font-family: Arial, sans-serif;
+                text-align: center;
+                box-sizing: border-box;
+            }
+
+            /* Profile image container with progress indicator */
+            .profile-image-container {
+                position: relative;
+                width: 150px;
+                height: 150px;
+                margin: 0 auto 20px auto;
+            }
+
+            .progress-ring {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 150px;
+                height: 150px;
+                transform: rotate(-90deg); /* Rotate to start at the top */
+            }
+
+            .progress-ring circle {
+                width: 100%;
+                height: 100%;
+                fill: none;
+                stroke-width: 5;
+                stroke-linecap: round;
+            }
+
+            .background-ring {
+                stroke: #e0e0e0;
+            }
+
+            .progress-ring-fill {
+                stroke: url(#gradient); /* Use the gradient defined in SVG defs */
+                stroke-dasharray: 439.8; /* Circumference of the circle (2 * π * radius) */
+                stroke-dashoffset: 439.8; /* Initially hidden */
+                transition: stroke-dashoffset 0.5s ease;
+            }
+
+            /* Profile icon inside the circle */
+            .profile-icon {
+                font-size: 64px;
+                color: #cccccc;
+                line-height: 1;
+                position: relative;
+                top: 40px; /* Center the icon within the SVG */
+            }
+
+            /* Profile information styling */
+            .profile-info {
+                text-align: left;
+                margin-top: 10px;
+            }
+
+            .profile-info .field {
+                margin-bottom: 12px;
+            }
+
+            .profile-info .field label {
+                font-weight: bold;
+                color: #333;
+                display: block;
+            }
+
+            .profile-info .field span {
+                color: #666;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="profile-card">
+            <!-- Profile completion indicator -->
+            <div class="profile-image-container">
+                <div class="progress-ring">
+                    <svg width="150" height="150">
+                        <defs>
+                            <!-- Define gradient for the progress ring -->
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#f7c978" />
+                                <stop offset="13%" stop-color="#f3a469" />
+                                <stop offset="25%" stop-color="#f18271" />
+                                <stop offset="38%" stop-color="#cc6b8e" />
+                                <stop offset="50%" stop-color="#a86aa4" />
+                                <stop offset="62%" stop-color="#8f6aae" />
+                                <stop offset="75%" stop-color="#7b5fac" />
+                                <stop offset="87%" stop-color="#5a55ae" />
+                                <stop offset="0%" stop-color="#3f51b1" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="background-ring" cx="75" cy="75" r="70"></circle>
+                        <circle class="progress-ring-fill" cx="75" cy="75" r="70"></circle>
+                    </svg>
+                </div>
+                <div class="profile-icon">👤</div>
+            </div>
+
+            <!-- Profile information -->
+            <div class="profile-info">
+                <div class="field">
+                    <label>Name:</label>
+                    <span>John Doe</span>
+                </div>
+                <div class="field">
+                    <label>Username:</label>
+                    <span>@johndoe</span>
+                </div>
+                <div class="field">
+                    <label>Email:</label>
+                    <span>johndoe@example.com</span>
+                </div>
+                <div class="field">
+                    <label>Date of Birth:</label>
+                    <span>01/01/1990</span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // JavaScript for setting the profile completion percentage
+            function setProfileCompletion(percentage) {
+                const progressCircle = document.querySelector(".progress-ring-fill");
+                const radius = progressCircle.r.baseVal.value;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (percentage / 100) * circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+
+            // Set profile completion percentage here
+            setProfileCompletion(75); // Set this to the desired percentage (e.g., 75 for 75%)
+        </script>
+    </body>
+</html>

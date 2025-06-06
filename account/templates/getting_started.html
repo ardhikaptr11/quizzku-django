@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'account/getting-started.css' %}" />
+        <link rel="stylesheet" href="{% static 'account/icons.css' %}" />
+        <link rel="icon" type="image/x-icon" href="{% static 'media/course_images/favicon.ico' %}" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <title>Getting Started</title>
+        <style>
+            .password-checker {
+                display: grid;
+                width: fit-content;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: 30px;
+                grid-template-areas: "icon message";
+                height: 30px;
+                align-items: center;
+                margin: 20px auto;
+            }
+
+            .spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                border-top: 4px solid #2e8b57;
+                border-radius: 50%;
+                width: 30px;
+                height: 100%;
+                animation: spin 500ms linear infinite;
+                margin-right: 5px;
+            }
+
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+
+            #matched {
+                height: 100%;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .checkmark-icon,
+            .close-icon {
+                font-size: 1.875rem;
+            }
+
+            .checkmark-icon {
+                color: #2e8b57;
+            }
+
+            .close-icon {
+                color: #ff4d4d;
+            }
+
+            #loadingSpinner,
+            #matched,
+            #unmatched {
+                grid-area: icon;
+            }
+
+            #resultMessage {
+                font-weight: 600;
+            }
+
+            .show {
+                display: flex;
+                align-items: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page-bg">
+            <div class="error-icon">
+                <div class="animated-icon animated-icon--error animate font-normal">
+                    <span class="line left"></span><span class="line right"></span>
+                    <div class="circle-border"></div>
+                    <div class="fix left"></div>
+                    <div class="fix right"></div>
+                </div>
+            </div>
+            <div class="info-icon">
+                <div class="unanimated-icon unanimated-icon--info font-normal"><div class="letter">i</div></div>
+            </div>
+            <div class="wrapper">
+                <div class="form-container">
+                    <div class="button-group">
+                        <div id="btn"></div>
+                        <button type="button" class="toggle-btn" onclick="slideToSignIn()">Sign In</button>
+                        <button type="button" class="toggle-btn" onclick="slideToSignUp()">Sign Up</button>
+                    </div>
+                    <form
+                        id="signin"
+                        class="input-group"
+                        action="{% url 'account:login' %}"
+                        method="POST"
+                        csrf-token="{{ csrf_token }}"
+                    >
+                        <div class="login-title">
+                            <h2>Welcome to</h2>
+                            <a href="{% url 'onlinecourse:index' %}"
+                                ><h1>Quizz<span>ku</span></h1></a
+                            >
+                        </div>
+
+                        <div class="email input-field">
+                            <label>
+                                <input
+                                    type="email"
+                                    class="email-input"
+                                    placeholder="Email"
+                                    name="email"
+                                    autocomplete="email"
+                                />
+                            </label>
+                            <ion-icon name="mail-outline" class="email-icon"></ion-icon>
+                        </div>
+                        <div class="password input-field">
+                            <label>
+                                <input type="checkbox" class="password-toggle" checked />
+                                <div class="password-bg"></div>
+                                <div class="toggle-eye open">
+                                    <ion-icon name="eye-outline"></ion-icon>
+                                </div>
+                                <div class="toggle-eye close">
+                                    <ion-icon name="eye-off-outline"></ion-icon>
+                                </div>
+                                <ion-icon name="lock-closed-outline" class="password-lock"></ion-icon>
+                                <input
+                                    type="password"
+                                    class="password-input"
+                                    placeholder="Password"
+                                    name="password"
+                                    autocomplete="current-password"
+                                />
+                            </label>
+                        </div>
+                        <button type="submit" class="submit-btn login">Login</button>
+                        <p>Don't have an account? <a href="#" onclick="slideToSignUp()">Register now!</a></p>
+                    </form>
+                    <form id="signup" class="input-group" action="{% url 'account:registration' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="email input-field">
+                            <label>
+                                <input
+                                    type="email"
+                                    class="email-input"
+                                    placeholder="Email"
+                                    name="email"
+                                    autocomplete="email"
+                                />
+                            </label>
+                            <ion-icon name="mail-outline" class="email-icon"></ion-icon>
+                            <ion-icon name="information-circle-outline" class="info-detail"></ion-icon>
+                        </div>
+                        <div class="username input-field">
+                            <label>
+                                <input
+                                    type="text"
+                                    class="username-input"
+                                    placeholder="Username"
+                                    name="username"
+                                    autocomplete="username"
+                                />
+                            </label>
+                            <ion-icon name="at-outline" class="at-icon"></ion-icon>
+                            <ion-icon name="information-circle-outline" class="info-detail"></ion-icon>
+                        </div>
+                        <div class="password input-field">
+                            <label>
+                                <input type="checkbox" class="password-toggle" checked />
+                                <div class="password-bg"></div>
+                                <div class="toggle-eye open">
+                                    <ion-icon name="eye-outline"></ion-icon>
+                                </div>
+                                <div class="toggle-eye close">
+                                    <ion-icon name="eye-off-outline"></ion-icon>
+                                </div>
+                                <ion-icon name="lock-closed-outline" class="password-lock"></ion-icon>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    class="password-input"
+                                    placeholder="Password"
+                                    name="password"
+                                    autocomplete="new-password"
+                                />
+                            </label>
+                        </div>
+                        <div id="password-indicator" style="display: none">
+                            <ul>
+                                <li>Password strength: <span id="strength-percent">0%</span></li>
+                                <li id="length-check" class="invalid">8 - 32 characters</li>
+                                <li id="number-check" class="invalid">At least contain 1 number</li>
+                                <li id="upper-check" class="invalid">At least contain 1 uppercase letter</li>
+                                <li id="lower-check" class="invalid">At least contain 1 lowercase letter</li>
+                                <li id="specialchar-check" class="invalid">At least contain 1 special character</li>
+                            </ul>
+                        </div>
+                        <div id="strength-container">
+                            <div id="strength-bar">
+                                <div id="strength-bar-inner"></div>
+                            </div>
+                        </div>
+                        <div class="password input-field">
+                            <label>
+                                <input type="checkbox" class="password-toggle" checked />
+                                <div class="password-bg"></div>
+                                <div class="toggle-eye open">
+                                    <ion-icon name="eye-outline"></ion-icon>
+                                </div>
+                                <div class="toggle-eye close">
+                                    <ion-icon name="eye-off-outline"></ion-icon>
+                                </div>
+                                <ion-icon name="lock-closed-outline" class="password-lock"></ion-icon>
+                                <input
+                                    type="password"
+                                    class="password-input"
+                                    placeholder="Re-enter Password"
+                                    name="confirm-password"
+                                    autocomplete="new-password"
+                                />
+                            </label>
+                        </div>
+                        <button type="submit" class="submit-btn">Register</button>
+                        <div class="password-checker hidden">
+                            <div id="loadingSpinner" class="spinner"></div>
+                            <div id="matched" class="hidden">
+                                <ion-icon name="checkmark-outline" class="checkmark-icon"></ion-icon>
+                            </div>
+                            <div id="unmatched" class="hidden">
+                                <ion-icon name="close-outline" class="close-icon"></ion-icon>
+                            </div>
+                            <div id="resultMessage">
+                                <p></p>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <p class="footer-heart">
+                    Made with
+                    <g-emoji
+                        class="g-emoji"
+                        alias="heart"
+                        fallback-src="https://github.githubassets.com/images/icons/emoji/unicode/2764.png"
+                    >
+                        <img
+                            class="emoji"
+                            alt="heart"
+                            height="20"
+                            width="20"
+                            src="https://github.githubassets.com/images/icons/emoji/unicode/2764.png"
+                        />
+                    </g-emoji>
+                    by <a href="https://github.com/ardhikaptr11">Ardhika</a>
+                </p>
+            </div>
+            <div id="notificationArea"></div>
+        </div>
+        <script src="{% static 'javascript/gettingStarted.js' %}"></script>
+        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    </body>
+</html>

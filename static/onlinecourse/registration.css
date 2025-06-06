@@ -1,0 +1,41 @@
+form {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #34495e;
+}
+
+.registration-wrap {
+    width: 500px;
+    background-color: #ecf0f1;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 3px 3px 10px #333;
+}
+
+.form-group {
+    width: 75%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h2 {
+    font-family: "Helvetica Neue", Arial, Sans-Serif;
+    text-align: center;
+    color: #065292;
+    padding: 30px;
+    margin-bottom: 0;
+}
+
+input[type="text"],
+input[type="password"] {
+    margin-bottom: 20px;
+}
+
+button {
+    width: 50%;
+    padding: 10px !important;
+    border-radius: 50px !important;
+    margin-bottom: 5px;
+}

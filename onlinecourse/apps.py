@@ -9,5 +9,8 @@ class OnlinecourseConfig(AppConfig):
     Attributes:
         name (str): The name of the application.
     """
-    
+    default_auto_field = 'django.db.models.BigAutoField'
     name = 'onlinecourse'
+
+    def ready(self):
+        import onlinecourse.signals

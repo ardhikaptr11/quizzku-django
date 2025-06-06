@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            body {
+                background-color: #eee;
+            }
+
+            html {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+            }
+
+            *,
+            *::before,
+            *::after,
+            *:before,
+            *:after {
+                -webkit-box-sizing: inherit;
+                -moz-box-sizing: inherit;
+                box-sizing: inherit;
+            }
+
+            .font-normal {
+                font-size: 80px;
+            }
+
+            .animated-icon {
+                width: 1em;
+                height: 1em;
+                border: 0.1em solid transparent;
+                border-radius: 50%;
+                /* margin: 0.5em auto; */
+                padding: 0;
+                position: relative;
+                cursor: default;
+                user-select: none;
+                transform: scale(0.375);
+            }
+
+            .animated-icon--error {
+                border-color: #cc4e3d;
+            }
+
+            .animated-icon--error::before,
+            .animated-icon--error::after {
+                content: "";
+                border-radius: 50%;
+                position: absolute;
+                width: 0.7em;
+                height: 1em;
+                background: #eee;
+                transform: rotate(45deg);
+            }
+
+            .animated-icon--error::before {
+                border-radius: 1em 0 0 1em;
+                width: 0.5875em;
+                top: 0.125em;
+                left: -0.125em;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon--error::after {
+                border-radius: 0 1em 1em 0;
+                top: 0.03em;
+                left: 0.265em;
+                transform: rotate(-45deg);
+                transform-origin: 0 0.5em;
+            }
+
+            .animated-icon--error > .placeholder {
+                width: 1em;
+                height: 1em;
+                border: 0.1em solid rgba(204, 78, 61, 0.4);
+                border-radius: 50%;
+                position: absolute;
+                left: -0.1em;
+                top: -0.1em;
+                z-index: 2;
+            }
+
+            .animated-icon--error > .fix.left {
+                width: 0.1em;
+                height: 1em;
+                background-color: #eee;
+                position: absolute;
+                left: 0.2em;
+                top: -0.25em;
+                z-index: 1;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon--error > .fix.right {
+                width: 0.1em;
+                height: 0.6em;
+                background-color: #eee;
+                position: absolute;
+                right: 0.325em;
+                top: 0.1em;
+                z-index: 1;
+                transform: rotate(45deg);
+            }
+
+            .animated-icon > .line {
+                height: 0.1em;
+                background-color: #cc4e3d;
+                display: block;
+                border-radius: 0.025em;
+                position: absolute;
+                z-index: 2;
+            }
+
+            .animated-icon > .line.left {
+                width: 0.5875em;
+                left: 0.095em;
+                top: 0.35em;
+                transform: rotate(45deg);
+            }
+
+            .animated-icon > .line.right {
+                width: 0.5875em;
+                right: 0.095em;
+                top: 0.35em;
+                transform: rotate(-45deg);
+            }
+
+            .animated-icon.animate::after {
+                animation: rotate-placeholder 5s ease-in;
+            }
+
+            .animated-icon.animate > .left {
+                animation: animate-line-left 1s;
+            }
+
+            .animated-icon.animate > .right {
+                animation: animate-line-right 1s;
+            }
+
+            @keyframes animate-line-left {
+                0% {
+                    width: 0;
+                    left: 0.095em;
+                    top: 0.35;
+                }
+
+                50% {
+                    width: 0;
+                    left: 0.095em;
+                    top: 0;
+                }
+
+                100% {
+                    width: 0.5875em;
+                    left: 0.095em;
+                    top: 0.35em;
+                }
+            }
+
+            @keyframes animate-line-right {
+                0% {
+                    width: 0;
+                    right: 0.095em;
+                    top: 0.35;
+                }
+
+                50% {
+                    width: 0;
+                    right: 0.095em;
+                    top: 0;
+                }
+
+                100% {
+                    width: 0.5875em;
+                    right: 0.095em;
+                    top: 0.35em;
+                }
+            }
+
+            @keyframes rotate-placeholder {
+                0% {
+                    transform: rotate(-45deg);
+                }
+
+                5% {
+                    transform: rotate(-45deg);
+                }
+
+                12% {
+                    transform: rotate(-405deg);
+                }
+
+                100% {
+                    transform: rotate(-405deg);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="animated-icon animated-icon--error animate font-normal">
+            <span class="line left"></span><span class="line right"></span>
+            <div class="placeholder"></div>
+            <div class="fix left"></div>
+            <div class="fix right"></div>
+        </div>
+    </body>
+</html>

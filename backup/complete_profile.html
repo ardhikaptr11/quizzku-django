@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>User Profile ID Card</title>
+        <link rel="stylesheet" href="complete-profile.css" />
+    </head>
+    <body>
+        <!-- Container for lanyard and ID card -->
+        <div class="card-container">
+            <!-- Lanyard Straps -->
+            <div class="lanyard"></div>
+            <!-- ID Card Container -->
+            <div class="id-card">
+                <!-- Profile Image Section -->
+                <div class="profile-image-container">
+                    <div class="overlay">
+                        <img
+                            id="profileImage"
+                            src="../static/media/course_images/male-default-profile.jpg"
+                            alt="Profile"
+                            class="profile-image"
+                        />
+                        <div class="mask">
+                            <h3>EDIT PROFILE</h3>
+                        </div>
+                        <!-- <label for="imageUpload" class="upload-label">Click to upload image</label>
+                        <input type="file" id="imageUpload" accept="image/*" onchange="loadImage(event)" /> -->
+                    </div>
+                </div>
+
+                <!-- Profile Information Section -->
+                <div class="id-info">
+                    <h2>User Profile</h2>
+
+                    <div class="name-row">
+                        <p>
+                            <label for="firstName">First Name:</label>
+                            <input type="text" id="firstName" placeholder="John" />
+                        </p>
+                        <p>
+                            <label for="lastName">Last Name:</label>
+                            <input type="text" id="lastName" placeholder="Doe" />
+                        </p>
+                    </div>
+
+                    <p>
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" value="johndoe123" disabled />
+                    </p>
+
+                    <p>
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" value="johndoe@example.com" disabled />
+                    </p>
+
+                    <p>
+                        <label for="gender">Gender:</label>
+                        <select id="gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </p>
+
+                    <p>
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" placeholder="123 Main St, Springfield" />
+                    </p>
+                </div>
+            </div>
+        </div>
+        <script src="script.js"></script>
+    </body>
+</html>

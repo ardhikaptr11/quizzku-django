@@ -1,0 +1,381 @@
+*,
+*::before,
+*::after,
+*:before,
+*:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.font-normal {
+    font-size: 80px;
+}
+
+/* Animated error icon styling */
+.animated-icon,
+.unanimated-icon {
+    width: 0.75em;
+    height: 0.75em;
+    border: 0.1em solid transparent;
+    border-radius: 50%;
+    padding: 0;
+    position: relative;
+    cursor: default;
+    user-select: none;
+    margin-left: -10px;
+    margin-top: -8px;
+    transform: scale(0.375);
+}
+
+.animated-icon,
+.unanimated-icon {
+    flex-shrink: 0;
+}
+
+.unanimated-icon--info {
+    text-align: center;
+    color: #3674b2;
+    border-color: #4d8bca;
+}
+
+.unanimated-icon--info > .letter {
+    font-size: 0.6em;
+    line-height: 0.95em;
+    /* font-weight: 600; */
+}
+
+.animated-icon--error {
+    border-color: #cc4e3d;
+}
+
+.animated-icon--error::before,
+.animated-icon--error::after,
+.animated-icon--success::before,
+.animated-icon--success::after {
+    content: "";
+    border-radius: 50%;
+    position: absolute;
+    width: 0.7em;
+    height: 1em;
+    background: #e6e9f0;
+    transform: rotate(45deg);
+}
+
+.animated-icon--error::before,
+.animated-icon--success::before {
+    border-radius: 1em 0 0 1em;
+    width: 0.395em;
+    top: 0.015em;
+    left: -0.125em;
+    height: 65px;
+    transform: rotate(-45deg);
+}
+
+.animated-icon--error::after,
+.animated-icon--success::after {
+    border-radius: 0 1em 1em 0;
+    top: -0.125em;
+    left: 0.28em;
+    height: 65px;
+    transform: rotate(-45deg);
+    transform-origin: 0 0.5em;
+    width: 0.495em;
+}
+
+/* .animated-icon--success::after {
+    border-radius: 0 1em 1em 0;
+    top: 0.03em;
+    left: 0.265em;
+    transform: rotate(-45deg);
+    transform-origin: 0 0.5em;
+} */
+
+.animated-icon--error > .circle-border,
+.animated-icon--success > .circle-border {
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 50%;
+    position: absolute;
+    left: -0.1em;
+    top: -0.1em;
+    z-index: 2;
+}
+
+.animated-icon--error > .circle-border {
+    border: 0.1em solid rgba(204, 78, 61, 0.4);
+}
+
+.animated-icon--success > .circle-border {
+    border: 0.1em solid rgba(54, 178, 116, 0.4);
+}
+
+.animated-icon--error > .fix.left {
+    width: 0.1em;
+    height: 0.75em;
+    background-color: #e6e9f0;
+    position: absolute;
+    left: 0.225em;
+    top: -0.085em;
+    z-index: 1;
+    transform: rotate(-45deg);
+}
+
+.animated-icon--error > .fix.right {
+    width: 0.1em;
+    height: 0.4em;
+    background-color: #e6e9f0;
+    position: absolute;
+    right: 0.225em;
+    top: 0.095em;
+    z-index: 1;
+    transform: rotate(45deg);
+}
+
+.animated-icon--error > .line,
+.animated-icon--success > .line {
+    height: 0.1em;
+    display: block;
+    border-radius: 0.025em;
+    position: absolute;
+    z-index: 2;
+}
+
+.animated-icon--error > .line {
+    background-color: #cc4e3d;
+}
+
+.animated-icon--success > .line {
+    background-color: #36b272;
+}
+
+.animated-icon--error > .line.left {
+    width: 0.4em;
+    left: 0.075em;
+    top: 0.225em;
+    transform: rotate(45deg);
+}
+
+.animated-icon--error > .line.right {
+    width: 0.4em;
+    right: 0.075em;
+    top: 0.225em;
+    transform: rotate(-45deg);
+}
+
+.animated-icon--error.animate::after {
+    animation: rotate-placeholder 5s ease-in;
+}
+
+.animated-icon--error.animate > .left {
+    animation: animate-line-left 1s;
+}
+
+.animated-icon--error.animate > .right {
+    animation: animate-line-right 1s;
+}
+
+@keyframes animate-line-left {
+    0% {
+        width: 0;
+        left: 0.075em;
+        top: 0.225em;
+    }
+
+    50% {
+        width: 0;
+        left: 0.075em;
+        top: 0;
+    }
+
+    100% {
+        width: 0.4em;
+        left: 0.075em;
+        top: 0.225em;
+    }
+}
+
+@keyframes animate-line-right {
+    0% {
+        width: 0;
+        right: 0.075em;
+        top: 0.225em;
+    }
+
+    50% {
+        width: 0;
+        right: 0.075em;
+        top: 0;
+    }
+
+    100% {
+        width: 0.4em;
+        right: 0.075em;
+        top: 0.225em;
+    }
+}
+
+@keyframes rotate-placeholder {
+    0% {
+        transform: rotate(-45deg);
+    }
+
+    5% {
+        transform: rotate(-45deg);
+    }
+
+    12% {
+        transform: rotate(-405deg);
+    }
+
+    100% {
+        transform: rotate(-405deg);
+    }
+}
+/* End of styling */
+.animated-icon--success {
+    border-color: #36b274;
+}
+
+.animated-icon.animate::after {
+    animation: rotate-placeholder 5s ease-in;
+}
+
+.animated-icon--success > .line.tip {
+    width: 0.225em;
+    left: 0.055em;
+    top: 0.3em;
+    transform: rotate(45deg);
+}
+
+.animated-icon--success > .line.long {
+    width: 0.375em;
+    right: 0.0325em;
+    top: 0.235em;
+    transform: rotate(-45deg);
+}
+
+.animated-icon.animate > .tip {
+    animation: animate-success-tip 1s;
+}
+
+.animated-icon.animate > .long {
+    animation: animate-success-long 1s;
+}
+
+@keyframes animate-success-tip {
+    0% {
+        width: 0;
+        left: 0.0175em;
+        top: 0.0875em;
+    }
+
+    54% {
+        width: 0;
+        left: 0.0175em;
+        top: 0.0875em;
+    }
+
+    70% {
+        width: 0.375em;
+        left: -0.1em;
+        top: 0.275em;
+    }
+
+    84% {
+        width: 0.1375em;
+        left: 0.12em;
+        top: 0.325em;
+    }
+
+    100% {
+        width: 0.225em;
+        left: 0.055em;
+        top: 0.3em;
+    }
+}
+
+@keyframes animate-success-long {
+    0% {
+        width: 0;
+        right: 0.325em;
+        top: 0.375em;
+    }
+
+    65% {
+        width: 0;
+        right: 0.325em;
+        top: 0.375em;
+    }
+
+    84% {
+        width: 0.4375em;
+        right: 0;
+        top: 0.25em;
+    }
+
+    100% {
+        width: 0.375em;
+        right: 0.0325em;
+        top: 0.225em;
+    }
+}
+
+/* @keyframes animate-success-tip {
+    0% {
+        width: 0;
+        left: 0.055em;
+        top: 0.3em;
+    }
+
+    50% {
+        width: 0;
+        left: 0.055em;
+        top: 0.3em;
+    }
+
+    70% {
+        width: 0.475em;
+        left: -0.1em;
+        top: 0.4em;
+    }
+
+    84% {
+        width: 0.2375em;
+        left: 0.12em;
+        top: 0.5em;
+    }
+
+    100% {
+        width: 0.225em;
+        left: 0.055em;
+        top: 0.3em;
+    }
+}
+
+
+@keyframes animate-success-long {
+    0% {
+        width: 0;
+        right: 0.5325em;
+        top: 0.235em;
+    }
+
+    65% {
+        width: 0;
+        right: 0.5325em;
+        top: 0.235em;
+    }
+
+    84% {
+        width: 0.4375em;
+        right: 0;
+        top: 0.21em;
+    }
+
+    100% {
+        width: 0.375em;
+        right: 0.0325em;
+        top: 0.235em;
+    }
+} */

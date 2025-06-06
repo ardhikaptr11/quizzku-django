@@ -1,0 +1,444 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.page-bg {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(rgba(1, 22, 39, 0.9), rgba(1, 22, 39, 0.9)),
+        url("/static/media/course_images/background.jpg");
+    background-position: center;
+    background-size: cover;
+}
+
+.form-container {
+    width: 380px;
+    height: 470px;
+    background-color: #e6e9f0;
+    position: relative;
+    padding: 5px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    border-radius: 30px;
+}
+
+.button-group {
+    position: relative;
+    width: 220px;
+    margin: 30px auto;
+    box-shadow: 0 0 10px 2px #2e8b57;
+    border-radius: 30px;
+    text-align: center;
+}
+
+.toggle-btn {
+    padding: 10px 30px;
+    cursor: pointer;
+    background: transparent;
+    border: 0;
+    outline: none;
+    position: relative;
+    color: seagreen;
+    font-weight: 600;
+}
+
+#btn {
+    top: 0;
+    left: 0;
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    background-color: #011627;
+    border-radius: inherit;
+    transition: 0.5s;
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-title h2 {
+    color: #011627;
+    font-size: 1.25rem;
+}
+
+.login-title h1 {
+    font-family: sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-style: italic;
+    color: #1e3548;
+    font-size: 2.5rem;
+}
+.login-title a {
+    text-decoration: none;
+}
+
+
+.login-title h1 span {
+    color: #529c7f;
+}
+
+.input-group {
+    position: absolute;
+    width: 280px;
+    transition: 0.5s;
+}
+
+.input-field {
+    margin: 10px auto;
+}
+
+#signup .input-field,
+#strength-container {
+    margin: 5px auto;
+}
+
+/* input::placeholder {
+    font-weight: 700;
+}
+
+#signup .input-field input[name="confirm-password"]::placeholder {
+    font-size: 10px;
+} */
+
+.password,
+#username,
+#fname,
+#lname {
+    position: relative;
+    background-color: #011627;
+    border-radius: 10px;
+    width: 250px;
+    height: 50px;
+    box-shadow: 0 0 12px 0 rgba(1, 1, 1, 0.25);
+    overflow: hidden;
+}
+
+.password-bg {
+    background: #f3f4f6;
+    position: absolute;
+    width: 150%;
+    height: 100%;
+    border-radius: 5px;
+    top: 0;
+    right: -50%;
+    transition: 0.2s all ease-in-out;
+}
+
+.password-toggle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.toggle-eye {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+}
+
+.toggle-eye.close {
+    transition: 0.4s all ease-in-out;
+}
+
+.toggle-eye.open {
+    transition: 0.2s all ease-in-out;
+}
+
+.password-lock,
+.user-icon,
+.name-icon {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 25px;
+}
+
+.password-input,
+.username-input,
+.firstname-input,
+.lastname-input {
+    width: 200px;
+    position: absolute;
+    top: 55%;
+    transform: translateY(-55%);
+    left: 60px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #2e8b57;
+    outline: none;
+    letter-spacing: 0.03rem;
+    font-family: "Roboto Mono", monospace;
+    transition: all 0.5s;
+}
+
+.user-icon,
+.name-icon {
+    color: #ffffff;
+}
+
+.password-toggle:checked ~ .password-bg {
+    width: 30px;
+    height: 30px;
+    top: 10px;
+    right: 10px;
+    border-radius: 50%;
+}
+
+.password-toggle:checked ~ .password-input {
+    -webkit-text-security: disc;
+}
+
+.password-toggle:checked ~ .password-lock {
+    color: #ffffff;
+}
+
+.password-toggle:checked ~ .toggle-eye.close {
+    opacity: 0;
+}
+
+input[type="text"], input[type="password"] {
+    word-wrap: break-word;
+    word-break: break-all;
+    width: 50%;
+}
+
+.submit-btn {
+    position: relative;
+    display: block;
+    margin: auto;
+    width: 50%;
+    background-color: #011627;
+    color: #2e8b57;
+    padding: 10px 30px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+}
+
+.signin-message-indicator,
+.signup-message-indicator {
+    font-family: "Poppins";
+    font-weight: 700;
+    display: block;
+    width: 250px;
+    height: 35px;
+    margin: auto;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2px 0;
+    line-height: 2;
+}
+
+.success,
+.warning,
+.alert {
+    font-family: AntonaRegular;
+    font-weight: bold;
+}
+
+.success {
+    background: #d1e6dd;
+    color: #213f2d;
+    border: 2px solid #b0cdc6;
+}
+
+.warning {
+    background: #fff3cd;
+    color: #7e6a34;
+    border: 2px solid #fee4a4;
+}
+
+.danger {
+    background-color: #f4d8d9;
+    color: #5a141e;
+    border: 2px solid #f5aeb7;
+}
+
+#signin {
+    left: 50px;
+    margin: 0 auto;
+    /* transition: left 0.5s ease; */
+}
+
+#signin button {
+    margin-top: 10px;
+}
+
+#signin p {
+    text-align: center;
+    position: absolute;
+    right: 0;
+    left: 0;
+    bottom: -55px;
+}
+
+#signin p a {
+    color: #005493;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#signup {
+    left: 450px;
+}
+
+#signup button {
+    bottom: -5px;
+}
+
+#strength-container {
+    margin-top: 5px;
+    width: 250px;
+    display: none;
+    /* border: 1px solid #011627; */
+}
+
+#strength-bar {
+    background-color: grey;
+    width: 100%;
+    height: 8px;
+    /* background-color: #e0e0e0; */
+    border-radius: 4px;
+    /* margin-bottom: 10px; */
+}
+
+#strength-bar-inner {
+    height: 100%;
+    width: 0;
+    background-color: #f39c12;
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+#strength-container p {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+#password-indicator {
+    position: absolute;
+    width: 250px;
+    top: 238px;
+    margin: auto;
+    left: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #011627;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+li {
+    font-size: 14px;
+}
+
+li:has(span) {
+    color: #fefefe;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+#strength-percent {
+    color: #fefefe;
+}
+
+li.valid {
+    color: #2e8b57;
+}
+
+li.invalid {
+    color: #ffffff;
+}
+
+.valid:before {
+    content: "✔️ ";
+}
+
+.invalid:before {
+    content: "❌ ";
+}
+
+.footer-heart {
+    position: relative;
+    text-align: center;
+    font-family: open sans, sans-serif;
+    color: seagreen;
+}
+
+.footer-heart a {
+    color: #ffffff;
+    padding-bottom: 0.25em;
+    text-decoration: none;
+}
+
+.footer-heart a:hover {
+    color: #ffffff;
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg id='squiggle-link' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:ev='http://www.w3.org/2001/xml-events' viewBox='0 0 20 4'%3E%3Cstyle type='text/css'%3E.squiggle{animation:shift .3s linear infinite;}@keyframes shift {from {transform:translateX(0);}to {transform:translateX(-20px);}}%3C/style%3E%3Cpath fill='none' stroke='%23005493' stroke-width='2' class='squiggle' d='M0,3.5 c 5,0,5,-3,10,-3 s 5,3,10,3 c 5,0,5,-3,10,-3 s 5,3,10,3'/%3E%3C/svg%3E");
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-size: 30%;
+    border-bottom: 0;
+    padding-bottom: 0.3em;
+    text-decoration: none;
+}
+
+.emoji {
+    vertical-align: middle;
+}
+
+
+@media screen and (max-width: 576px) {
+    .wrapper {
+        transform: scale(0.9);
+    }
+    
+}
+
+@media screen and (max-width: 480px) {
+    .wrapper {
+        transform: scale(0.8);
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .wrapper {
+        transform: scale(0.7);
+    }
+}
+
+/* @media screen and (max-width: 480px) {
+    .form-container {
+        width: 95%;
+        height: auto;
+        padding: 15px;
+    }
+} */
